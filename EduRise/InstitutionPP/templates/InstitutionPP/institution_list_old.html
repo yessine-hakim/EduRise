@@ -1,0 +1,220 @@
+{% extends 'clustering_app/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-building"></i> Educational Institutions</h1>
+        <p class="text-muted">Total: {{ total_count }} institutions</p>
+    </div>
+</div>
+
+<!-- Cluster Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card" style="border-left-color: var(--cluster-0);">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Cluster 0</h6>
+                <h4 class="card-title">{{ cluster_stats.0.count }}</h4>
+                <p class="mb-0">
+                    <small>Small Metropolitan ({{ cluster_stats.0.percentage|floatformat:1 }}%)</small>
+                </p>
+                <a href="{% url 'cluster_details' 0 %}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card" style="border-left-color: var(--cluster-1);">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Cluster 1</h6>
+                <h4 class="card-title">{{ cluster_stats.1.count }}</h4>
+                <p class="mb-0">
+                    <small>Medium-to-Large ({{ cluster_stats.1.percentage|floatformat:1 }}%)</small>
+                </p>
+                <a href="{% url 'cluster_details' 1 %}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card" style="border-left-color: var(--cluster-2);">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Cluster 2</h6>
+                <h4 class="card-title">{{ cluster_stats.2.count }}</h4>
+                <p class="mb-0">
+                    <small>Standard Small ({{ cluster_stats.2.percentage|floatformat:1 }}%)</small>
+                </p>
+                <a href="{% url 'cluster_details' 2 %}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card" style="border-left-color: var(--cluster-3);">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Cluster 3</h6>
+                <h4 class="card-title">{{ cluster_stats.3.count }}</h4>
+                <p class="mb-0">
+                    <small>Overseas ({{ cluster_stats.3.percentage|floatformat:1 }}%)</small>
+                </p>
+                <a href="{% url 'cluster_details' 3 %}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add New Institution Form -->
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Add New Institution</h5>
+    </div>
+    <div class="card-body form-section">
+        <form method="post" class="row g-3">
+            {% csrf_token %}
+            
+            <div class="col-md-12">
+                <label for="{{ form.name.id_for_label }}" class="form-label">
+                    Institution Name (Optional)
+                </label>
+                {{ form.name }}
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.nombre_classes_2009.id_for_label }}" class="form-label">
+                    Number of Classes <span class="text-danger">*</span>
+                </label>
+                {{ form.nombre_classes_2009 }}
+                <div class="form-text">Number of classes in 2009</div>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.eleves_premier.id_for_label }}" class="form-label">
+                    Primary Students <span class="text-danger">*</span>
+                </label>
+                {{ form.eleves_premier }}
+                <div class="form-text">Number of primary/elementary students</div>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.eleves_superieur.id_for_label }}" class="form-label">
+                    Secondary Students <span class="text-danger">*</span>
+                </label>
+                {{ form.eleves_superieur }}
+                <div class="form-text">Number of secondary/higher students</div>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="{{ form.latitude.id_for_label }}" class="form-label">
+                    Latitude <span class="text-danger">*</span>
+                </label>
+                {{ form.latitude }}
+                <div class="form-text">Geographic latitude (e.g., 48.8566 for Paris)</div>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="{{ form.longitude.id_for_label }}" class="form-label">
+                    Longitude <span class="text-danger">*</span>
+                </label>
+                {{ form.longitude }}
+                <div class="form-text">Geographic longitude (e.g., 2.3522 for Paris)</div>
+            </div>
+            
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Add Institution & Predict Cluster
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                    <i class="bi bi-x-lg"></i> Reset
+                </button>
+            </div>
+            
+            {% if form.errors %}
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <strong>Please correct the following errors:</strong>
+                    <ul class="mb-0">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Institutions Table -->
+<div class="card">
+    <div class="card-header bg-secondary text-white sticky-top-custom">
+        <h5 class="mb-0"><i class="bi bi-table"></i> All Institutions</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped mb-0">
+                <thead class="table-light sticky-top">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Cluster</th>
+                        <th>Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for institution in institutions %}
+                    <tr>
+                        <td>{{ institution.id }}</td>
+                        <td>{{ institution.name|default:"—" }}</td>
+                        <td>
+                            <span class="badge cluster-badge-{{ institution.cluster }} text-white">
+                                {{ institution.cluster }}: {{ institution.get_cluster_name }}
+                            </span>
+                        </td>
+                        <td><small>{{ institution.created_at|date:"Y-m-d H:i" }}</small></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            No institutions found. Add one using the form above!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+ 

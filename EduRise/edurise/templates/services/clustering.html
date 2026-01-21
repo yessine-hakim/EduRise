@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Clustering - EduRise{% endblock %}
+{% block meta_description %}Service Importance Clustering - EduRise{% endblock %}
+
+{% block content %}
+<section class="ml-page services-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Service Importance Analysis</h1>
+            <p class="page-subtitle">Identify service priority clusters for institutions</p>
+        </div>
+
+        <div class="module-description">
+            <h2>Module Purpose</h2>
+            <p>This module groups institutions into service importance clusters based on their characteristics and
+                pressure levels.
+                It helps identify critical areas for intervention in Restauration and Accommodation services.</p>
+        </div>
+
+        <div class="prediction-container">
+            <div class="form-wrapper">
+                <div class="ml-section">
+                    <h2>Input Data</h2>
+                    <div class="input-form">
+                        <form method="post" class="services-form">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                            <div class="error-message">
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
+
+                            <div class="form-section-group">
+                                <div class="form-section-header">
+                                    <h3>Institution Profile</h3>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.code_departement.id_for_label }}">Department Code</label>
+                                        {{ form.code_departement }}
+                                        {% if form.code_departement.errors %}
+                                        <div class="error-message">{{ form.code_departement.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.code_region.id_for_label }}">Region Code</label>
+                                        {{ form.code_region }}
+                                        {% if form.code_region.errors %}
+                                        <div class="error-message">{{ form.code_region.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.libelle_nature.id_for_label }}">Nature</label>
+                                    {{ form.libelle_nature }}
+                                    {% if form.libelle_nature.errors %}
+                                    <div class="error-message">{{ form.libelle_nature.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.type_etablissement.id_for_label }}">Establishment
+                                            Type</label>
+                                        {{ form.type_etablissement }}
+                                        {% if form.type_etablissement.errors %}
+                                        <div class="error-message">{{ form.type_etablissement.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.statut_public_prive.id_for_label }}">Status</label>
+                                        {{ form.statut_public_prive }}
+                                        {% if form.statut_public_prive.errors %}
+                                        <div class="error-message">{{ form.statut_public_prive.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-section-header" style="margin-top: 2rem;">
+                                    <h3>Services</h3>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.restauration.id_for_label }}">Restauration Available</label>
+                                        {{ form.restauration }}
+                                        {% if form.restauration.errors %}
+                                        <div class="error-message">{{ form.restauration.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.hebergement.id_for_label }}">Accommodation Available</label>
+                                        {{ form.hebergement }}
+                                        {% if form.hebergement.errors %}
+                                        <div class="error-message">{{ form.hebergement.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section-group">
+                                <div class="form-section-header">
+                                    <h3>Institution Capacity</h3>
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.nombre_eleves.id_for_label }}">Total Number of Students</label>
+                                    {{ form.nombre_eleves }}
+                                    {% if form.nombre_eleves.errors %}
+                                    <div class="error-message">{{ form.nombre_eleves.errors }}</div>
+                                    {% endif %}
+                                    <small class="form-help-text">Used to calculate service pressure indices.</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="button button-primary">Analyze Service Importance</button>
+                                <button type="reset" class="button button-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History placeholder to keep layout consistent if needed, or remove if not using history for clustering yet -->
+            <!-- <div class="history-wrapper"></div> -->
+        </div>
+
+        {% if prediction_result %}
+        <div class="ml-section">
+            <h2>Analysis Results</h2>
+            <div class="output-container">
+
+                <div class="output-card full-width {{ prediction_result.interpretation.level }}">
+                    <h3>{{ prediction_result.interpretation.title }}</h3>
+                    <div class="result-content">
+                        <p class="result-description">{{ prediction_result.interpretation.description }}</p>
+
+                        <div class="action-box">
+                            <h4>Recommended Action</h4>
+                            <p>{{ prediction_result.interpretation.action }}</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+        <div class="ml-section">
+            <h2>Results</h2>
+            <div class="output-container">
+                <div class="output-card">
+                    <h3>Awaiting Input</h3>
+                    <p>Complete the form above to determine the service importance level.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+    /* Specific styles for clustering results */
+    .output-card.full-width {
+        grid-column: 1 / -1;
+        border-left: 5px solid #ccc;
+    }
+
+    .output-card.danger {
+        border-left-color: #f44336;
+        background-color: #fff5f5;
+    }
+
+    .output-card.warning {
+        border-left-color: #ff9800;
+        background-color: #fff8e1;
+    }
+
+    .output-card.success {
+        border-left-color: #4CAF50;
+        background-color: #e8f5e9;
+    }
+
+    .result-content {
+        margin-top: 1rem;
+    }
+
+    .result-description {
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-box {
+        background: rgba(255, 255, 255, 0.7);
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .action-box h4 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .action-box p {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+</style>
+{% endblock %} 

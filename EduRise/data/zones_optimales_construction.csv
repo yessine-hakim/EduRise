@@ -1,0 +1,5 @@
+﻿Code_Departement,Zone_ID,Nb_Etablissements,Total_Eleves,Latitude_Optimale,Longitude_Optimale,Priorite,Nom_Departement
+3,1,7,14,-0.152528,0.31859,ÉLEVÉE,Département 3
+19,1,15,31,0.200079,0.244166,ÉLEVÉE,Département 19
+5,1,121,262,-0.172991,0.445755,ÉLEVÉE,Hautes-Alpes
+ 

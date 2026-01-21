@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enrollment Prediction - EduRise{% endblock %}
+{% block meta_description %}Predict enrollment growth and visualize institution clusters{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<link rel="stylesheet" href="{% static 'css/ml-pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ml-page enrollment-page">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1>Enrollment Growth Prediction</h1>
+            <p class="page-subtitle">
+                AI-driven predictions for institutional enrollment growth with geographic cluster analysis
+            </p>
+        </div>
+
+        <!-- Description -->
+        <div class="module-description">
+            <h2>Module Purpose</h2>
+            <p>
+                The Enrollment Prediction module analyzes institutional characteristics to forecast enrollment growth patterns.
+                By leveraging machine learning and geographic clustering, it identifies growth trajectories (High, Medium, Low).
+            </p>
+        </div>
+
+        <!-- ================= FORM + HISTORY ================= -->
+        <div class="prediction-container">
+
+            <!-- FORM -->
+            <div class="form-wrapper">
+                <div class="ml-section">
+                    <h2>Input Form</h2>
+
+                    <form method="post" class="enrollment-form">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="error-message">{{ form.non_field_errors }}</div>
+                        {% endif %}
+
+                        <!-- Institution -->
+                        <div class="form-section-group">
+                            <h3>Institution Details</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Institution Type</label>
+                                    {{ form.Type_etablissement }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    {{ form.Statut_public_prive }}
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nature</label>
+                                    {{ form.libelle_nature }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Accommodation</label>
+                                    {{ form.Hebergement }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enrollment -->
+                        <div class="form-section-group">
+                            <h3>Enrollment Data</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Number of Classes</label>
+                                    {{ form.Nombre_classes_2023 }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Number of Students</label>
+                                    {{ form.Eleves_Superieur }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Geo -->
+                        <div class="form-section-group">
+                            <h3>Geographic & Services</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Latitude</label>
+                                    {{ form.latitude }}
+                                </div>
+                                <div class="form-group">
+                                    <label>Longitude</label>
+                                    {{ form.longitude }}
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Restauration</label>
+                                    {{ form.Restauration }}
+                                </div>
+                                <div class="form-group">
+                                    <label>ULIS</label>
+                                    {{ form.ULIS }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="button button-primary">
+                                Generate Prediction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="history-wrapper">
+                <div class="history-card">
+                    <h2>Recent Predictions</h2>
+
+                    {% if prediction_history %}
+                        {% for entry in prediction_history %}
+                        <div class="history-item">
+                            <strong>{{ entry.growth_label }}</strong>
+                            <small>Cluster {{ entry.cluster_label }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No history yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= RESULTS ================= -->
+        <div class="ml-section">
+            <h2>Results</h2>
+
+            <div class="output-container">
+
+                {% if prediction %}
+
+                    {% if prediction.error %}
+                    <div class="output-card card-danger">
+                        <h3>Prediction Error</h3>
+                        <p>{{ prediction.error }}</p>
+                    </div>
+
+                    {% else %}
+                    <div class="output-card
+                        {% if prediction.class == 2 %}card-success
+                        {% elif prediction.class == 1 %}card-warning
+                        {% else %}card-danger{% endif %}">
+
+                        <h3>Enrollment Growth Prediction</h3>
+
+                        <div class="quality-gauge">
+                            <div class="growth-class">
+                                {{ prediction.class_label }}
+                            </div>
+                            <p>Confidence: {{ prediction.confidence|floatformat:1 }}%</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                <div class="output-card">
+                    <h3>Awaiting Input</h3>
+                    <p>Fill the form to generate prediction.</p>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- ================= CLUSTER ================= -->
+        {% if cluster %}
+        <div class="ml-section">
+            <h2>Geographic Cluster</h2>
+
+            <div class="output-card card-cluster">
+                <p><strong>Cluster:</strong> {{ cluster.cluster_label }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ================= MAP ================= -->
+        {% if cluster_map %}
+        <div class="ml-section">
+            <h2>Cluster Map</h2>
+
+            <iframe
+                src="{% static 'enrollment/maps_html/' %}{{ cluster_map }}"
+                style="width:100%; height:500px; border:none;">
+            </iframe>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<style>
+.card-success { border-left: 4px solid #28a745; }
+.card-warning { border-left: 4px solid #ffc107; }
+.card-danger  { border-left: 4px solid #dc3545; }
+.card-cluster { border-left: 4px solid #0066cc; }
+
+.output-card {
+    padding: 1.5rem;
+    background: #fff;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.quality-gauge {
+    text-align: center;
+    font-size: 1.2rem;
+}
+</style>
+{% endblock %}
+ 

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - EduRise{% endblock %}
+{% block meta_description %}Dashboard - EduRise{% endblock %}
+
+{% block content %}
+<section class="dashboard-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Analytics Dashboard</h1>
+            <p class="page-subtitle">Real-time data visualization and insights</p>
+        </div>
+
+        <div class="dashboard-container">
+            {% if user.is_admin %}
+            <!-- Admin Dashboard -->
+            <div class="powerbi-dashboard">
+                <iframe title="Dashboard Education (Admin)" width="100%" height="100%"
+                    src="https://app.powerbi.com/reportEmbed?reportId=5e0c4604-fdc7-4324-bdd2-5960c8ec93ff&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730"
+                    frameborder="0" allowfullscreen="true" allow="fullscreen">
+                </iframe>
+            </div>
+            {% elif user.is_institution_manager %}
+            <!-- Institution Manager Dashboard -->
+            <div class="powerbi-dashboard">
+                <iframe title="Dashboard Education (Institutions Manager)" width="100%" height="100%"
+                    src="https://app.powerbi.com/reportEmbed?reportId=4d2225af-ed5b-442f-a30d-4e479c8af364&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730"
+                    frameborder="0" allowfullscreen="true" allow="fullscreen">
+                </iframe>
+            </div>
+            {% elif user.is_service_manager %}
+            <!-- Service Manager Dashboard -->
+            <div class="powerbi-dashboard">
+                <iframe title="Dashboard Education (Services Manager)" width="100%" height="100%"
+                    src="https://app.powerbi.com/reportEmbed?reportId=39f0d840-7d69-441a-800f-6c02ebf105d4&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730"
+                    frameborder="0" allowfullscreen="true" allow="fullscreen">
+                </iframe>
+            </div>
+            {% else %}
+            <!-- No Dashboard Access -->
+            <div class="dashboard-placeholder">
+                <div class="placeholder-icon">
+                    {% include 'includes/icons.html' with icon_name='chart' %}
+                </div>
+                <h2>No Dashboard Access</h2>
+                <p>Your user role does not have access to any dashboards.</p>
+                <p class="placeholder-note">Please contact your administrator for access.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="dashboard-info">
+            <h3>Dashboard Information</h3>
+            <ul class="info-list">
+                <li><strong>Your Role:</strong> {{ user.get_role_display }}</li>
+                <li><strong>Dashboard Type:</strong>
+                    {% if user.is_admin %}
+                    Full Administrative Dashboard with complete analytics
+                    {% elif user.is_institution_manager %}
+                    Institutions-focused Dashboard with enrollment metrics
+                    {% elif user.is_service_manager %}
+                    Services-focused Dashboard with service delivery metrics
+                    {% else %}
+                    No dashboard assigned
+                    {% endif %}
+                </li>
+                <li>Dashboards are updated in real-time with the latest data</li>
+                <li>Use the interactive features to explore different metrics and insights</li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %} 

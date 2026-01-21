@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Public/Private Classification - EduRise{% endblock %}
+{% block meta_description %}Predict if an institution is public or private - EduRise{% endblock %}
+
+{% block content %}
+<section class="ml-page">
+    <div class="container">
+        <h1>Public or Private Classification</h1>
+        <p class="page-subtitle">Machine Learning prediction for institutional classification</p>
+
+        {% if model_missing %}
+        <!-- Model Missing Warning -->
+        <div class="alert alert-warning">
+            <h3>⚠️ Models Not Found</h3>
+            <p>The classification models haven't been created yet. To use this feature:</p>
+            <ol>
+                <li>Open <code>classification.ipynb</code> notebook</li>
+                <li>Run all cells to train the Random Forest model</li>
+                <li>The notebook will export <code>classification.joblib</code> and <code>classification_scaler.joblib</code></li>
+                <li>Refresh this page</li>
+            </ol>
+            <p>The models will be saved to the project root directory.</p>
+        </div>
+        {% endif %}
+
+        <!-- Prediction Result -->
+        {% if prediction_result %}
+        <div class="ml-section">
+            <h2>Prediction Result</h2>
+            <div class="output-container">
+                <div class="output-card {% if prediction_result.prediction == 0 %}output-success{% else %}output-primary{% endif %}">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        {{ prediction_result.label }} Institution
+                    </h3>
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: {{ prediction_result.confidence }}%;"></div>
+                        <span class="confidence-text">{{ prediction_result.confidence|floatformat:1 }}% Confidence</span>
+                    </div>
+                    <p>The model predicts this institution is <strong>{{ prediction_result.label|lower }}</strong> with {{ prediction_result.confidence|floatformat:1 }}% confidence.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Classification Form -->
+        <div class="ml-section">
+            <h2>Institution Details</h2>
+            <p>Enter the following information to predict if the institution is public or private</p>
+
+            <div class="input-form">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h3>Basic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.nombre_classes_2009.id_for_label }}">
+                                Number of Classes *
+                            </label>
+                            {{ form.nombre_classes_2009 }}
+                            {% if form.nombre_classes_2009.errors %}
+                                <span class="form-error">{{ form.nombre_classes_2009.errors }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.eleves_premier.id_for_label }}">
+                                Primary Students *
+                            </label>
+                            {{ form.eleves_premier }}
+                            {% if form.eleves_premier.errors %}
+                                <span class="form-error">{{ form.eleves_premier.errors }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.eleves_superieur.id_for_label }}">
+                                Secondary Students *
+                            </label>
+                            {{ form.eleves_superieur }}
+                            {% if form.eleves_superieur.errors %}
+                                <span class="form-error">{{ form.eleves_superieur.errors }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h3>Geographic Location</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.latitude.id_for_label }}">
+                                Latitude *
+                            </label>
+                            {{ form.latitude }}
+                            <small>e.g., 48.8566 for Paris</small>
+                            {% if form.latitude.errors %}
+                                <span class="form-error">{{ form.latitude.errors }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.longitude.id_for_label }}">
+                                Longitude *
+                            </label>
+                            {{ form.longitude }}
+                            <small>e.g., 2.3522 for Paris</small>
+                            {% if form.longitude.errors %}
+                                <span class="form-error">{{ form.longitude.errors }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <h3>Services Offered</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.restauration.id_for_label }}">
+                                Restauration *
+                            </label>
+                            {{ form.restauration }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.hebergement.id_for_label }}">
+                                Hebergement (Boarding) *
+                            </label>
+                            {{ form.hebergement }}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.ulis.id_for_label }}">
+                                ULIS (Special Needs) *
+                            </label>
+                            {{ form.ulis }}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="button button-primary" {% if model_missing %}disabled{% endif %}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Predict Public or Private
+                        </button>
+                        <button type="reset" class="button button-secondary">Reset Form</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.output-success {
+    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+    color: white;
+}
+
+.output-primary {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.output-card {
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+}
+
+.output-card svg {
+    margin-bottom: 1rem;
+}
+
+.confidence-bar {
+    position: relative;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    margin: 1.5rem 0;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
+
+.confidence-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.alert-warning {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.alert-warning h3 {
+    color: #92400e;
+    margin-bottom: 1rem;
+}
+
+.alert-warning ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.alert-warning code {
+    background: #fde68a;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %}
+ 

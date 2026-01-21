@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Clusters - Institutions{% endblock %}
+{% block meta_description %}Lecture synthétique des clusters d'établissements et carte par département{% endblock %}
+
+{% block content %}
+<section class="clusters-page">
+    <div class="container">
+        <header class="cluster-hero">
+            <p class="eyebrow">Clusters • Institutions</p>
+            <h1>4 profils, vue claire</h1>
+            <p class="lede">Synthèse brève, actions directes, cartes 2×2 pour sentir le terrain en un regard.</p>
+        </header>
+
+        <section class="cluster-table">
+            <div class="section-heading">
+                <h2>Priorités en un clin d'œil</h2>
+                <p>Action proposée par cluster.</p>
+            </div>
+            <div class="table-card">
+                <div class="table-head">
+                    <span>Cluster</span>
+                    <span>Profil</span>
+                    <span>Effectifs</span>
+                    <span>Priorité</span>
+                    <span>Action</span>
+                </div>
+                <div class="table-body">
+                    {% for row in priority_table %}
+                    <div class="table-row">
+                        <span>{{ row.cluster }}</span>
+                        <span>{{ row.profil }}</span>
+                        <span>{{ row.effectifs }}</span>
+                        <span>{{ row.priorite }}</span>
+                        <span>{{ row.action }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="cluster-focus">
+            <div class="section-heading">
+                <h2>Choisissez un cluster</h2>
+                <p>Portrait synthétique + carte de dominance.</p>
+            </div>
+            <div class="focus-top">
+                <label for="clusterSelect">Cluster</label>
+                <select id="clusterSelect">
+                    {% for cluster in cluster_cards %}
+                    <option value="{{ cluster.id }}">{{ cluster.id }} · {{ cluster.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div id="clusterDetail" class="detail-card"></div>
+
+            <div class="map-single">
+                {% if map_error %}
+                <div class="alert">{{ map_error }}</div>
+                {% else %}
+                <div id="cluster-map-single" class="map-tile"></div>
+                {% endif %}
+            </div>
+        </section>
+
+    </div>
+</section>
+
+{% if cluster_map_json %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script>
+(function() {
+    const rawMap = '{{ cluster_map_json|escapejs }}';
+    const rawClusters = '{{ cluster_cards_json|escapejs }}';
+    const mapData = rawMap ? JSON.parse(rawMap) : [];
+    const clusters = rawClusters ? JSON.parse(rawClusters) : [];
+    if (!mapData.length || !clusters.length) return;
+
+    const selectEl = document.getElementById('clusterSelect');
+    const detailEl = document.getElementById('clusterDetail');
+    const mapEl = document.getElementById('cluster-map-single');
+    const geojsonUrl = 'https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/departements-version-simplifiee.geojson';
+    const colorScale = 'Plasma';
+
+    const renderDetail = (cluster) => {
+        if (!cluster || !detailEl) return;
+        detailEl.innerHTML = `
+            <div class="detail-head">
+                <div>
+                    <p class="cluster-id">Cluster ${cluster.id}</p>
+                    <h3>${cluster.title}</h3>
+                </div>
+                <span class="pill strong">${cluster.share}</span>
+            </div>
+            <div class="detail-body">
+                <div>
+                    <p class="subheading">Signaux clés</p>
+                    <ul class="bullets soft">${(cluster.bullets || []).map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>
+                <div class="divider"></div>
+                <div>
+                    <p class="subheading">Action rapide</p>
+                    <ul class="bullets accent">${(cluster.actions || []).map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>
+            </div>`;
+    };
+
+    const renderMap = (clusterId) => {
+        if (!mapEl) return;
+        const key = `c${clusterId}`;
+        const trace = {
+            type: 'choropleth',
+            geojson: geojsonUrl,
+            locations: mapData.map(d => d.code),
+            featureidkey: 'properties.code',
+            z: mapData.map(d => d[key]),
+            colorscale: colorScale,
+            showscale: true,
+            colorbar: { title: 'Proportion', ticksuffix: '%', tickformat: '.1%' },
+            hovertemplate: '<b>%{location}</b><br>' +
+                'Proportion: %{z:.1%}<br>' +
+                'C0: %{customdata[0]:.1%} · ' +
+                'C1: %{customdata[1]:.1%} · ' +
+                'C2: %{customdata[2]:.1%} · ' +
+                'C3: %{customdata[3]:.1%}<extra></extra>',
+            customdata: mapData.map(d => [d.c0, d.c1, d.c2, d.c3]),
+        };
+
+        Plotly.newPlot(mapEl, [trace], {
+            title: { text: `Dominance Cluster ${clusterId}`, x: 0.5, font: { size: 15, color: '#0f172a' } },
+            margin: { l: 10, r: 10, t: 36, b: 10 },
+            geo: { fitbounds: 'locations', visible: false },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+        }, {
+            responsive: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['lasso2d','select2d','zoomInGeo','zoomOutGeo','resetGeo','toImage']
+        });
+    };
+
+    const sync = (id) => {
+        const cluster = clusters.find(c => String(c.id) === String(id));
+        renderDetail(cluster);
+        renderMap(id);
+    };
+
+    if (selectEl) {
+        selectEl.addEventListener('change', (e) => sync(e.target.value));
+        sync(selectEl.value || 0);
+    }
+})();
+</script>
+{% endif %}
+
+<style>
+.clusters-page { padding: 36px 0 64px; }
+.cluster-hero { background: radial-gradient(circle at 25% 20%, rgba(255,255,255,0.10), transparent 32%), linear-gradient(130deg, #0f172a, #1f2f63); color: #fff; padding: 28px; border-radius: 18px; box-shadow: 0 14px 34px rgba(17,24,39,0.25); margin-bottom: 30px; }
+.cluster-hero h1 { margin: 6px 0 8px; font-size: 2rem; font-weight: 800; letter-spacing: -0.01em; }
+.cluster-hero .lede { max-width: 760px; opacity: 0.9; font-size: 1rem; }
+
+.cluster-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-top: 8px; }
+.cluster-card { background: linear-gradient(180deg, #ffffff, #f8fafc); border: 1px solid #e5e7eb; border-radius: 16px; padding: 18px; box-shadow: 0 10px 26px rgba(15,23,42,0.08); display: flex; flex-direction: column; gap: 12px; }
+.cluster-card__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cluster-card h2 { margin: 0; font-size: 1.12rem; color: #0f172a; letter-spacing: -0.01em; }
+.cluster-id { margin: 0; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 800; color: #475569; font-size: 0.8rem; }
+.cluster-card__body { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: start; }
+.bullets { margin: 0; padding-left: 18px; color: #334155; line-height: 1.5; font-size: 0.97rem; }
+.bullets.soft li { opacity: 0.9; }
+.bullets.accent { color: #0f172a; font-weight: 600; }
+.divider { height: 100%; width: 1px; background: #e5e7eb; align-self: stretch; }
+
+.cluster-table .table-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 10px 24px rgba(0,0,0,0.05); overflow: hidden; }
+.table-head, .table-row { display: grid; grid-template-columns: 90px 1fr 110px 120px 1.6fr; gap: 10px; padding: 11px 16px; align-items: center; }
+.table-head { background: #f1f5f9; font-weight: 800; color: #111827; border-bottom: 1px solid #e2e8f0; letter-spacing: 0.01em; }
+.table-row { border-bottom: 1px solid #f1f5f9; color: #334155; }
+.table-row:last-child { border-bottom: none; }
+.table-row span:nth-child(4) { font-weight: 700; color: #111827; }
+
+.cluster-map { margin-top: 30px; }
+.map-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.map-tile { background: linear-gradient(180deg, #ffffff, #f8fafc); border: 1px solid #e5e7eb; border-radius: 16px; min-height: 300px; box-shadow: 0 12px 26px rgba(15,23,42,0.08); padding: 6px; }
+.alert { background: #fff7ed; border: 1px solid #fed7aa; padding: 12px 14px; border-radius: 12px; color: #9a3412; font-weight: 700; box-shadow: 0 6px 16px rgba(252,211,77,0.25); }
+
+@media (max-width: 768px) {
+    .table-head, .table-row { grid-template-columns: repeat(2, 1fr); }
+    .map-grid { grid-template-columns: 1fr; }
+    .divider { display: none; }
+}
+</style>
+{% endblock %}
+ 

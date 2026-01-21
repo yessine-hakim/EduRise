@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EduRise</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>EduRise</h1>
+                <p>National Data & Analytics Platform</p>
+            </div>
+            
+            {% if messages %}
+                <div class="messages" role="alert" aria-live="polite">
+                    {% for message in messages %}
+                        <div class="message message-{{ message.tags }}" role="alert">
+                            {{ message }}
+                            <button class="message-close" onclick="this.parentElement.remove()" aria-label="Close message">×</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <form method="post" class="login-form" aria-label="Login form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        required 
+                        autofocus
+                        autocomplete="username"
+                        placeholder="Enter your username"
+                        aria-required="true"
+                        aria-describedby="username-help"
+                    >
+                    <small id="username-help" class="sr-only">Enter your username to sign in</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required
+                        autocomplete="current-password"
+                        placeholder="Enter your password"
+                        aria-required="true"
+                        aria-describedby="password-help"
+                    >
+                    <small id="password-help" class="sr-only">Enter your password to sign in</small>
+                </div>
+                
+                <button type="submit" class="button button-primary login-button" aria-label="Sign in to EduRise">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Users are created by system administrators</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+ 

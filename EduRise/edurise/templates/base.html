@@ -1,0 +1,497 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="{% block meta_description %}EduRise - National Data & Analytics Platform{% endblock %}">
+    <title>{% block title %}EduRise{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="{% static 'images/Logo.png' %}" alt="EduRise Logo" class="sidebar-logo">
+                <span class="logo-text">EduRise</span>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- User Profile Section -->
+        <div class="user-profile">
+            <a href="#" class="profile-link" id="openProfileModal"
+                onclick="document.getElementById('profileModal').style.display='flex'; document.getElementById('profileModal').classList.add('active'); document.body.style.overflow='hidden'; return false;"
+                aria-label="Edit profile">
+                {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}" class="profile-avatar"
+                    onerror="(function(){this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='flex';}).call(this)"
+                    onload="console.log('Image loaded successfully:', this.src);">
+                <div class="profile-avatar-placeholder" style="display: none;">
+                    {{ user.first_name.0|default:"U" }}{{ user.last_name.0|default:"" }}
+                </div>
+                {% else %}
+                <div class="profile-avatar-placeholder">
+                    {{ user.first_name.0|default:"U" }}{{ user.last_name.0|default:"" }}
+                </div>
+                {% endif %}
+                <div class="user-info">
+                    <h3>{{ user.get_full_name|default:user.username }}</h3>
+                    <span class="role-badge role-{{ user.role|lower }}">{{ user.get_role_display }}</span>
+                </div>
+                <span class="profile-edit-hint">Edit Profile</span>
+            </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="sidebar-nav">
+            <ul class="nav-list">
+                <li>
+                    <a href="{% url 'users:dashboard' %}"
+                        class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                        aria-label="Dashboard">
+                        <span class="nav-icon">
+                            {% include 'includes/icons.html' with icon_name='dashboard' %}
+                        </span>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+
+                {% if 'institutions' in user.get_accessible_sections %}
+                <li class="nav-item-dropdown {% if request.resolver_match.url_name == 'institutions_recommendations' or request.resolver_match.url_name == 'institutions_prediction' or request.resolver_match.url_name == 'clusters_overview' %}open{% endif %}"
+                    data-section="institutions">
+                    <a href="#"
+                        class="nav-item dropdown-toggle {% if request.resolver_match.url_name == 'institutions_recommendations' or request.resolver_match.url_name == 'institutions_prediction' or request.resolver_match.url_name == 'clusters_overview' %}active{% endif %}"
+                        aria-label="Institutions" onclick="this.parentElement.classList.toggle('open'); return false;">
+                        <span class="nav-icon">
+                            {% include 'includes/icons.html' with icon_name='institutions' %}
+                        </span>
+                        <span class="nav-text" style="flex:1;">Institutions</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'institutions:prediction' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'prediction' and request.resolver_match.app_name == 'institutions' %}active{% endif %}">Predictions
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'institutions:clusters_overview' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'clusters_overview' %}active{% endif %}">Clusters
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'institutions:institutions_recommendations' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'institutions_recommendations' %}active{% endif %}">Recommendations
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                {% if 'enrollment' in user.get_accessible_sections %}
+                <li
+                    class="nav-item-dropdown {% if 'enrollment' in request.path or request.resolver_match.url_name == 'predict_with_map' or request.resolver_match.url_name == 'cluster_maps' %}open{% endif %}">
+                    <a href="#"
+                        class="nav-item dropdown-toggle {% if 'enrollment' in request.path or request.resolver_match.url_name == 'predict_with_map' or request.resolver_match.url_name == 'cluster_maps' %}active{% endif %}"
+                        aria-label="Enrollment" onclick="this.parentElement.classList.toggle('open'); return false;">
+                        <span class="nav-icon">
+                            {% include 'includes/icons.html' with icon_name='enrollment' %}
+                        </span>
+                        <span class="nav-text" style="flex:1;">Enrollment</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'enrollment:predict_with_map' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'predict_with_map' %}active{% endif %}">
+                                Growth Prediction
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'enrollment:cluster_maps' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'cluster_maps' %}active{% endif %}">
+                                Cluster Maps
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                {% if 'services' in user.get_accessible_sections %}
+                <li
+                    class="nav-item-dropdown {% if 'services' in request.path or request.resolver_match.url_name == 'services_list' or request.resolver_match.url_name == 'recommendations' %}open{% endif %}">
+                    <a href="#"
+                        class="nav-item dropdown-toggle {% if 'services' in request.path or request.resolver_match.url_name == 'services_list' or request.resolver_match.url_name == 'recommendations' %}active{% endif %}"
+                        aria-label="Services" onclick="this.parentElement.classList.toggle('open'); return false;">
+                        <span class="nav-icon">
+                            {% include 'includes/icons.html' with icon_name='services' %}
+                        </span>
+                        <span class="nav-text" style="flex:1;">Services</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'services:services_list' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'services_list' %}active{% endif %}">
+                                Predictions
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'services:recommendations' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'recommendations' %}active{% endif %}">
+                                Recommendations
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'services:clustering_view' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'clustering_view' %}active{% endif %}">
+                                Clustering
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                {% if 'ulis' in user.get_accessible_sections %}
+                <li
+                    class="nav-item-dropdown {% if 'ulis' in request.path or request.resolver_match.url_name == 'ulis_predict' or request.resolver_match.url_name == 'ulis_cluster_maps' %}open{% endif %}">
+                    <a href="#"
+                        class="nav-item dropdown-toggle {% if 'ulis' in request.path or request.resolver_match.url_name == 'ulis_predict' or request.resolver_match.url_name == 'ulis_cluster_maps' %}active{% endif %}"
+                        aria-label="ULIS" onclick="this.parentElement.classList.toggle('open'); return false;">
+                        <span class="nav-icon">
+                            {% include 'includes/icons.html' with icon_name='ulis' %}
+                        </span>
+                        <span class="nav-text" style="flex:1;">ULIS</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'ulis:ulis_predict' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'ulis_predict' %}active{% endif %}">
+                                Demand Prediction
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'ulis:ulis_cluster_maps' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'ulis_cluster_maps' %}active{% endif %}">
+                                Cluster Maps
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                {% if 'institutions' in user.get_accessible_sections %}
+                <!-- InstitutionPP: Clustering & Classification -->
+                <li class="nav-item-dropdown {% if 'institutionpp' in request.path %}open{% endif %}">
+                    <a href="#"
+                        class="nav-item dropdown-toggle {% if 'institutionpp' in request.path %}active{% endif %}"
+                        aria-label="Institution" onclick="this.parentElement.classList.toggle('open'); return false;">
+                        <span class="nav-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="6"></circle>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                        </span>
+                        <span class="nav-text" style="flex:1;">Institution</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'institution_list' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'institution_list' or request.resolver_match.url_name == 'cluster_details' %}active{% endif %}">
+                                Clustering
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'classify_institution' %}"
+                                class="dropdown-item {% if request.resolver_match.url_name == 'classify_institution' %}active{% endif %}">
+                                Public/Private
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Logout Button -->
+        <div class="sidebar-footer">
+            <a href="{% url 'users:logout' %}" class="logout-btn" aria-label="Logout">
+                <span class="nav-icon">
+                    {% include 'includes/icons.html' with icon_name='logout' %}
+                </span>
+                <span class="nav-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Mobile Header -->
+        <header class="mobile-header">
+            <button class="mobile-menu-btn" id="mobileSidebarToggle" aria-label="Toggle navigation">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <span class="mobile-logo-text">EduRise</span>
+        </header>
+
+        <!-- Messages Display -->
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="message message-{{ message.tags }}" role="alert" aria-live="polite" data-auto-dismiss="true">
+                {{ message }}
+                <button class="message-close" onclick="this.parentElement.remove()"
+                    aria-label="Close message">×</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal-overlay" id="profileModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Edit Profile</h2>
+                <button class="modal-close" id="closeModal"
+                    onclick="document.getElementById('profileModal').classList.remove('active'); document.getElementById('profileModal').style.display='none'; document.body.style.overflow=''; return false;"
+                    aria-label="Close modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="profileEditForm" action="{% url 'users:profile_edit' %}" method="post"
+                    enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="modal-form-section">
+                        <h3>Profile Picture</h3>
+                        <div class="profile-image-upload">
+                            <div class="current-profile-image">
+                                {% if user.profile_image %}
+                                <img src="{{ user.profile_image.url }}" alt="Profile" id="modalAvatarPreview"
+                                    class="modal-avatar"
+                                    onerror="(function(){this.style.display='none'; var ph = document.getElementById('modalAvatarPlaceholder'); if(ph) ph.style.display='flex';}).call(this)">
+                                {% else %}
+                                <div class="modal-avatar-placeholder" id="modalAvatarPlaceholder">
+                                    {{ user.first_name.0|default:"U" }}{{ user.last_name.0|default:"" }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="upload-controls">
+                                <label for="profileImageInput" class="upload-label">
+                                    <span class="upload-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                    </span>
+                                    <span>Choose Image</span>
+                                </label>
+                                <input type="file" id="profileImageInput" name="profile_image" accept="image/*"
+                                    style="display: none;">
+                                <small class="form-help">JPG, PNG or GIF (max 5MB)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-form-section">
+                        <h3>Personal Information</h3>
+                        <div class="modal-form-row">
+                            <div class="modal-form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" name="first_name" value="{{ user.first_name }}"
+                                    required>
+                            </div>
+                            <div class="modal-form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" name="last_name" value="{{ user.last_name }}" required>
+                            </div>
+                        </div>
+                        <div class="modal-form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-message" id="modalMessage" style="display: none;"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button button-secondary" id="cancelModal"
+                    onclick="document.getElementById('profileModal').classList.remove('active'); document.getElementById('profileModal').style.display='none'; document.body.style.overflow=''; return false;">Cancel</button>
+                <button type="submit" form="profileEditForm" class="button button-primary" id="saveProfile">Save
+                    Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Widget -->
+    <div id="chat-widget-container">
+        <div id="chat-window">
+            <div id="chat-header">
+                <h3>EduRise Assistant</h3>
+                <button id="chat-close-btn">&times;</button>
+            </div>
+            <div id="chat-messages">
+                <div class="message bot">
+                    <p><strong>Hello! I'm your EduRise Assistant.</strong></p>
+                    <p>I can help you explore French educational institutions with detailed, data-driven insights. Ask
+                        me about:</p>
+                    <ul>
+                        <li>Institution details and locations</li>
+                        <li>Services (restauration, hébergement, ULIS)</li>
+                        <li>Departemental educational data</li>
+                    </ul>
+                    <p>What would you like to know?</p>
+                </div>
+            </div>
+            <div id="chat-input-area">
+                <button id="chat-mic-btn" title="Speak to assistant">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path>
+                        <path
+                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z">
+                        </path>
+                    </svg>
+                </button>
+                <input type="text" id="chat-input"
+                    placeholder="Ask about institutions, services, or educational data...">
+                <button id="chat-stop-speech-btn" title="Stop speaking" style="display: none;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path
+                            d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.39.29-.82.52-1.25.7v2.06c1.02-.19 1.96-.58 2.78-1.11L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z">
+                        </path>
+                    </svg>
+                </button>
+                <button id="chat-send-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <button id="chat-toggle-btn">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z">
+                </path>
+            </svg>
+        </button>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/profile-modal.js' %}"></script>
+    <script src="{% static 'js/chatbot.js' %}"></script>
+    <script>
+        // Auto-dismiss messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function () {
+            const messages = document.querySelectorAll('.message[data-auto-dismiss="true"]');
+            messages.forEach(msg => {
+                setTimeout(() => {
+                    if (msg && msg.parentElement) {
+                        msg.style.opacity = '0';
+                        msg.style.transition = 'opacity 0.3s ease-out';
+                        setTimeout(() => {
+                            msg.remove();
+                        }, 300);
+                    }
+                }, 5000); // 5 seconds
+            });
+        });
+
+        // Sidebar toggle functionality
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+
+        function toggleSidebar() {
+            const isCollapsing = !sidebar.classList.contains('collapsed'); // Desktop logic
+            // On mobile, 'collapsed' class means OPEN because of my CSS logic below
+            // Actually, let's unify: 'active' class for mobile open.
+
+            // Check window width
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+                document.body.classList.toggle('sidebar-mobile-open');
+
+                // Add overlay if it doesn't exist
+                if (document.body.classList.contains('sidebar-mobile-open')) {
+                    let overlay = document.querySelector('.sidebar-overlay');
+                    if (!overlay) {
+                        overlay = document.createElement('div');
+                        overlay.className = 'sidebar-overlay';
+                        overlay.onclick = () => {
+                            sidebar.classList.remove('mobile-open');
+                            document.body.classList.remove('sidebar-mobile-open');
+                            overlay.remove();
+                        };
+                        document.body.appendChild(overlay);
+                    }
+                } else {
+                    const overlay = document.querySelector('.sidebar-overlay');
+                    if (overlay) overlay.remove();
+                }
+            } else {
+                sidebar.classList.toggle('collapsed');
+                document.body.classList.toggle('sidebar-collapsed');
+            }
+
+            // Dispatch event
+            window.dispatchEvent(new CustomEvent('sidebarToggled'));
+        }
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', toggleSidebar);
+        }
+
+        if (mobileSidebarToggle) {
+            mobileSidebarToggle.addEventListener('click', toggleSidebar);
+        }
+
+        // Preserve sidebar dropdown state on page navigation
+        document.addEventListener('DOMContentLoaded', function () {
+
+
+            // Preserve active states - ensure active nav items are properly highlighted
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.nav-item, .dropdown-item');
+
+            navItems.forEach(item => {
+                const href = item.getAttribute('href');
+                if (href && currentPath.includes(href.split('/').filter(Boolean).pop() || '')) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html> 

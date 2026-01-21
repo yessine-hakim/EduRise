@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ULIS Module - EduRise{% endblock %}
+{% block meta_description %}ULIS (Inclusive Education Units) prediction and clustering analysis{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/ml-pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ml-page ulis-home-page">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1>ULIS Module</h1>
+            <p class="page-subtitle">
+                Comprehensive analysis and prediction for ULIS (Unité Localisée pour l'Inclusion Scolaire) programs
+            </p>
+        </div>
+
+        <!-- Description -->
+        <div class="module-description">
+            <h2>About ULIS</h2>
+            <p>
+                ULIS (Unité Localisée pour l'Inclusion Scolaire) are specialized education units designed to support 
+                students with disabilities in mainstream educational institutions. This module provides tools to predict 
+                future ULIS demand and analyze geographic clustering patterns across France.
+            </p>
+        </div>
+
+        <!-- Options Grid -->
+        <div class="options-grid">
+            {% for option in options %}
+            <div class="option-card">
+                <div class="option-header">
+                    <div class="option-icon">
+                        <i class="{{ option.icon }}"></i>
+                    </div>
+                </div>
+                
+                <div class="option-body">
+                    <h3>{{ option.title }}</h3>
+                    <p>{{ option.description }}</p>
+                </div>
+                
+                <div class="option-footer">
+                    <a href="{% url option.url %}" class="button button-primary">
+                        <i class="fas fa-arrow-right"></i> Access
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Features Section -->
+        <div class="ml-section features-section">
+            <h2>Key Features</h2>
+            
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered Predictions</h3>
+                    <p>Machine learning models trained on institutional data to forecast ULIS demand</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <h3>Geographic Analysis</h3>
+                    <p>Cluster institutions by location, demographics, and resources for strategic planning</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Data Insights</h3>
+                    <p>Interactive visualizations and statistics to understand ULIS distribution patterns</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Decision Support</h3>
+                    <p>Evidence-based insights to guide resource allocation and policy decisions</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+/* ULIS Home Page Styles */
+
+.ulis-home-page {
+    padding: var(--spacing-xxl) 0;
+    min-height: calc(100vh - 200px);
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xxl);
+}
+
+.option-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition-base);
+    height: 100%;
+}
+
+.option-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+    border-color: var(--secondary);
+}
+
+.option-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
+    padding: var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-icon {
+    font-size: 3rem;
+    color: white;
+}
+
+.option-body {
+    padding: var(--spacing-lg);
+    flex: 1;
+}
+
+.option-body h3 {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+.option-body p {
+    margin: 0;
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.option-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border-color-light);
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.option-footer .button {
+    flex: 1;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.features-section {
+    margin-top: var(--spacing-xxl);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.feature-item {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    text-align: center;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.feature-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.feature-item h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.feature-item p {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .option-header {
+        padding: var(--spacing-lg);
+    }
+
+    .option-icon {
+        font-size: 2.5rem;
+    }
+}
+</style>
+{% endblock %}
+ 

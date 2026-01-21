@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ULIS Demand Prediction - EduRise{% endblock %}
+{% block meta_description %}Predict future demand for ULIS programs{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/ml-pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ml-page ulis-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>ULIS Demand Prediction</h1>
+            <p class="page-subtitle">
+                AI-driven predictions for future demand for ULIS (Unité Localisée pour l'Inclusion Scolaire) programs
+            </p>
+        </div>
+
+        <!-- Description -->
+        <div class="module-description">
+            <h2>Module Purpose</h2>
+            <p>
+                The ULIS Prediction module analyzes institutional characteristics to forecast demand for specialized inclusive education programs.
+                By leveraging machine learning, it identifies demand trajectories (High, Medium, Low) based on demographic and institutional data.
+            </p>
+        </div>
+
+        <!-- ================= FORM + RESULTS ================= -->
+        <div class="prediction-container">
+
+            <!-- FORM -->
+            <div class="form-wrapper">
+                <div class="ml-section">
+                    <h2>Input Form</h2>
+
+                    <form method="post" class="ulis-form">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="error-message">{{ form.non_field_errors }}</div>
+                        {% endif %}
+
+                        <!-- Enrollment Data -->
+                        <div class="form-section-group">
+                            <h3>Enrollment Data</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Number of Classes (2024)</label>
+                                    <input type="number" name="Nombre_classes_2024" min="0" class="form-control" placeholder="Ex: 15" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Number of Students (2024)</label>
+                                    <input type="number" name="Nombre_eleves_2024" min="0" class="form-control" placeholder="Ex: 300" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Institution Details -->
+                        <div class="form-section-group">
+                            <h3>Institution Details</h3>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Institution Type</label>
+                                    <select name="Type_etablissement" class="form-control" required>
+                                        <option value="">-- Select --</option>
+                                        <option value="Lycée">Lycée (High School)</option>
+                                        <option value="Collège">Collège (Middle School)</option>
+                                        <option value="Information et orientation">Information et orientation (Information and Orientation)</option>
+                                        <option value="Autre">Autre (Other)</option>
+                                        <option value="École">École (School)</option>
+                                        <option value="Médico-social">Médico-social (Medico-Social)</option>
+                                        <option value="EREA">EREA</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Public/Private Status</label>
+                                    <select name="Statut_public_prive" class="form-control" required>
+                                        <option value="">-- Select --</option>
+                                        <option value="Public">Public</option>
+                                        <option value="Privé">Privé (Private)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Institution Nature</label>
+                                    <select name="libelle_nature" class="form-control" required>
+                                        <option value="">-- Select --</option>
+                                        <option value="LYCEE PROFESSIONNEL">LYCEE PROFESSIONNEL (Vocational High School)</option>
+                                        <option value="COLLEGE">COLLEGE (Middle School)</option>
+                                        <option value="LYCEE POLYVALENT">LYCEE POLYVALENT (Comprehensive High School)</option>
+                                        <option value="LYCEE D ENSEIGNEMENT GENERAL">LYCEE D ENSEIGNEMENT GENERAL (General Education High School)</option>
+                                        <option value="LYCEE ENSEIGNT GENERAL ET TECHNOLOGIQUE">LYCEE ENSEIGNT GENERAL ET TECHNOLOGIQUE (General and Technical Education High School)</option>
+                                        <option value="SECTION D ENSEIGNEMENT PROFESSIONNEL">SECTION D ENSEIGNEMENT PROFESSIONNEL (Vocational Education Section)</option>
+                                        <option value="CENTRE D INFORMATION ET D ORIENTATION">CENTRE D INFORMATION ET D ORIENTATION (Information and Orientation Center)</option>
+                                        <option value="SECTION ENSEIGT GEN. ET PROF. ADAPTE">SECTION ENSEIGT GEN. ET PROF. ADAPTE (Adapted General and Professional Education Section)</option>
+                                        <option value="LYCEE ENS GENERAL TECHNO PROF AGRICOLE">LYCEE ENS GENERAL TECHNO PROF AGRICOLE (General Technical and Agricultural High School)</option>
+                                        <option value="CIRCONSCRIPTIONS INSPECTION EDUC NAT">CIRCONSCRIPTIONS INSPECTION EDUC NAT (Educational Inspection Districts)</option>
+                                        <option value="ECOLE DE NIVEAU ELEMENTAIRE">ECOLE DE NIVEAU ELEMENTAIRE (Elementary Level School)</option>
+                                        <option value="ECOLE MATERNELLE">ECOLE MATERNELLE (Nursery School)</option>
+                                        <option value="INSTITUT MEDICO-EDUCATIF">INSTITUT MEDICO-EDUCATIF (Medico-Educational Institute)</option>
+                                        <option value="INSTITUT THERAPEUT. EDUCATIF PEDAGOGIQUE">INSTITUT THERAPEUT. EDUCATIF PEDAGOGIQUE (Therapeutic Educational Pedagogical Institute)</option>
+                                        <option value="ETAB REGIONAL/LYCEE ENSEIGNEMENT ADAPTE">ETAB REGIONAL/LYCEE ENSEIGNEMENT ADAPTE (Regional Establishment/Adapted Education High School)</option>
+                                        <option value="ECOLE ELEMENTAIRE D APPLICATION">ECOLE ELEMENTAIRE D APPLICATION (Application Elementary School)</option>
+                                        <option value="MAISON FAMILIALE RURALE EDUCATION ORIENT">MAISON FAMILIALE RURALE EDUCATION ORIENT (Rural Family Home Education Orientation)</option>
+                                        <option value="SERVICE DE LA DSDEN">SERVICE DE LA DSDEN (DSDEN Service)</option>
+                                        <option value="ETABLISSEMENT POUR POLY-HANDICAPES">ETABLISSEMENT POUR POLY-HANDICAPES (Establishment for Multiple Disabilities)</option>
+                                        <option value="DIRECTION SERVICES DEPARTEMENTAUX EN">DIRECTION SERVICES DEPARTEMENTAUX EN (Departmental Services Direction EN)</option>
+                                        <option value="ECOLE MATERNELLE D APPLICATION">ECOLE MATERNELLE D APPLICATION (Application Nursery School)</option>
+                                        <option value="LYCEE EXPERIMENTAL">LYCEE EXPERIMENTAL (Experimental High School)</option>
+                                        <option value="COLLEGE EXPERIMENTAL">COLLEGE EXPERIMENTAL (Experimental Middle School)</option>
+                                        <option value="IES POUR DEFICIENTS VISUELS">IES POUR DEFICIENTS VISUELS (Institute for Visually Impaired)</option>
+                                        <option value="LYCEE D ENSEIGNEMENT TECHNOLOGIQUE">LYCEE D ENSEIGNEMENT TECHNOLOGIQUE (Technical Education High School)</option>
+                                        <option value="INSTITUT EDUCATION MOTRICE (IEM)">INSTITUT EDUCATION MOTRICE (IEM) (Motor Education Institute)</option>
+                                        <option value="SECTION ENSEIGT GENERAL ET TECHNOLOGIQUE">SECTION ENSEIGT GENERAL ET TECHNOLOGIQUE (General and Technical Education Section)</option>
+                                        <option value="ECOLE PROFESSIONNELLE SPECIALISEE">ECOLE PROFESSIONNELLE SPECIALISEE (Specialized Vocational School)</option>
+                                        <option value="ECOLE SECONDAIRE SPECIALISEE (2 D CYCLE)">ECOLE SECONDAIRE SPECIALISEE (2 D CYCLE) (Specialized Secondary School 2nd Cycle)</option>
+                                        <option value="ETABLISSEMENT MEDICO-EXPERIMENTAL">ETABLISSEMENT MEDICO-EXPERIMENTAL (Medico-Experimental Establishment)</option>
+                                        <option value="LYCEE CLIMATIQUE">LYCEE CLIMATIQUE (Climate High School)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Restauration</label>
+                                    <select name="Restauration" class="form-control" required>
+                                        <option value="">-- Select --</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="button button-primary">
+                                Predict ULIS Demand
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- RESULTS -->
+            <div class="results-wrapper">
+                <div class="ml-section">
+                    <h2>Results</h2>
+
+                    <div class="output-container">
+
+                        {% if success and prediction %}
+
+                            {% if prediction.error %}
+                            <div class="output-card card-danger">
+                                <h3>Prediction Error</h3>
+                                <p>{{ prediction.error }}</p>
+                            </div>
+
+                            {% else %}
+                            <div class="output-card card-success">
+                                <h3>ULIS Demand Prediction</h3>
+
+                                <div class="quality-gauge">
+                                    <div class="growth-class">
+                                        {{ prediction.prediction }}
+                                    </div>
+                                    {% if prediction.confidence %}
+                                    <p>Confidence: {{ prediction.confidence|floatformat:1 }}%</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                        {% elif error %}
+                        <div class="output-card card-danger">
+                            <h3>Error</h3>
+                            <p>{{ error }}</p>
+                        </div>
+
+                        {% else %}
+                        <div class="output-card">
+                            <h3>Awaiting Input</h3>
+                            <p>Fill the form to generate prediction.</p>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Navigation to Cluster Maps -->
+<section class="navigation-section">
+    <div class="container">
+        <div class="navigation-links">
+            <a href="{% url 'ulis:ulis_cluster_maps' %}" class="button button-secondary">
+                <i class="fas fa-map-marked-alt"></i> View ULIS Cluster Maps
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+/* ULIS-specific styling overrides */
+.prediction-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-xl);
+}
+
+.form-wrapper {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.results-wrapper {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+}
+
+.output-container {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.output-card {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    background: var(--background-alt);
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.output-card h3 {
+    color: var(--primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.output-card.card-success {
+    background: #e8f5e9;
+    border-color: #4caf50;
+}
+
+.output-card.card-danger {
+    background: #ffebee;
+    border-color: #f44336;
+}
+
+.quality-gauge {
+    padding: var(--spacing-lg) 0;
+}
+
+.growth-class {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.navigation-section {
+    padding: var(--spacing-xl) 0;
+    background: var(--background-alt);
+    border-top: 1px solid var(--border-color);
+}
+
+.navigation-links {
+    text-align: center;
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.navigation-links .button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .prediction-container {
+        grid-template-columns: 1fr;
+    }
+
+    .navigation-links {
+        flex-direction: column;
+    }
+
+    .navigation-links .button {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+ 

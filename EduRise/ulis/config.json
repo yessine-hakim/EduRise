@@ -1,0 +1,102 @@
+{
+  "app_name": "ULIS Prediction Module",
+  "version": "1.0.0",
+  "description": "Predict future demand for ULIS programs based on demographic and institutional features",
+  "components": {
+    "form": {
+      "file": "forms.py",
+      "class": "ULISForm",
+      "fields": [
+        "Nombre_classes_2024",
+        "Nombre_eleves_2024",
+        "Type_etablissement",
+        "libelle_nature",
+        "Statut_public_prive",
+        "Restauration"
+      ]
+    },
+    "views": {
+      "file": "views.py",
+      "function": "ulis_prediction",
+      "authentication": "login_required",
+      "methods": ["GET", "POST"]
+    },
+    "ml_predictor": {
+      "file": "ml_predictor.py",
+      "main_function": "predict_ulis_demand",
+      "api_endpoint": "https://nefissi12-edurise.hf.space/predict/ulis"
+    },
+    "template": {
+      "file": "templates/ulis/ulis.html",
+      "layout": "two-column",
+      "left_column": "Form",
+      "right_column": "Results"
+    }
+  },
+  "features": {
+    "dynamic_form": true,
+    "english_language": true,
+    "ml_integration": true,
+    "error_handling": true,
+    "responsive_design": true,
+    "authentication_required": true
+  },
+  "huggingface_config": {
+    "space_url": "https://nefissi12-edurise.hf.space",
+    "endpoint": "/predict/ulis",
+    "timeout_seconds": 30,
+    "http_method": "POST",
+    "content_type": "application/json"
+  },
+  "input_mappings": {
+    "type_etablissement": {
+      "ECOLE": 0,
+      "COLLEGE": 1,
+      "LYCEE": 2,
+      "LP": 3
+    },
+    "libelle_nature": {
+      "MATERNELLE": 0,
+      "ELEMENTAIRE": 1,
+      "SECONDAIRE": 2,
+      "AUTRE": 3
+    },
+    "statut_public_prive": {
+      "PUBLIC": 0,
+      "PRIVE": 1
+    },
+    "restauration": {
+      "OUI": 1,
+      "NON": 0
+    }
+  },
+  "url_routing": {
+    "path": "ulis/",
+    "name": "ulis_prediction",
+    "view": "ulis_prediction"
+  },
+  "testing": {
+    "test_file": "test_ulis_prediction.py",
+    "test_cases": [
+      "test_valid_input_mapping",
+      "test_missing_required_field",
+      "test_invalid_numeric_value",
+      "test_invalid_choice_value",
+      "test_form_renders_correctly",
+      "test_valid_form_submission",
+      "test_view_requires_login",
+      "test_authenticated_user_can_access_form",
+      "test_form_submission_with_mock_prediction"
+    ]
+  },
+  "documentation": {
+    "readme": "README.md",
+    "huggingface_guide": "HUGGINGFACE_INTEGRATION.md"
+  },
+  "requirements": {
+    "django": ">=3.2",
+    "requests": ">=2.28.0",
+    "python": ">=3.8"
+  }
+}
+ 

@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ULIS Cluster Maps - EduRise{% endblock %}
+{% block meta_description %}ULIS clustering analysis and geographic visualization{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="{% static 'css/ml-pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="ml-page clusters-page">
+    <div class="container">
+
+        <!-- Header -->
+        <div class="page-header">
+            <h1>ULIS Clustering Analysis</h1>
+            <p class="page-subtitle">
+                Geographic and demographic clustering of ULIS (Inclusive Education Units) across France
+            </p>
+        </div>
+
+        <!-- Description -->
+        <div class="module-description">
+            <h2>Module Purpose</h2>
+            <p>
+                The ULIS Clustering module identifies and visualizes patterns in ULIS unit distribution. 
+                Using advanced machine learning algorithms, it groups units based on geographic location, 
+                enrollment patterns, and institutional characteristics to reveal regional inclusive education 
+                landscapes and inform strategic planning decisions.
+            </p>
+            <div class="module-note" style="margin-top:10px;padding:10px;background:#f8f9fb;border-left:4px solid #2b6cb0;border-radius:4px">
+                <strong>For teachers:</strong> This map groups departments into clusters based on how many inclusive
+                units (ULIS) they have relative to their total number of institutions. "High Priority" clusters
+                indicate areas with relatively low ULIS presence and should be considered first for resources
+                or new ULIS units. Use the preset buttons to filter and export prioritized locations for planning.
+            </div>
+        </div>
+
+        <!-- Section Exploration -->
+        <div class="ml-section">
+            <h2>Cluster Exploration</h2>
+            <div class="exploration-card">
+                <div class="cluster-stats-grid">
+                    {% for cluster in clusters %}
+                    <div class="stat-card stat-cluster-{{ cluster.cluster_id }}">
+                        <div class="stat-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ cluster.title }}</h3>
+                            <p class="stat-label">{{ cluster.label }}</p>
+                            <p class="stat-description">{{ cluster.description }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Cartes Interactives -->
+        <div class="ml-section">
+            <h2>Interactive Cluster Maps</h2>
+            
+            <div class="maps-grid">
+                {% for map in maps %}
+                <div class="map-card">
+                    <div class="map-card-header">
+                        <h3>
+                            <i class="fas fa-map-marked-alt"></i> 
+                            {{ map.title }}
+                        </h3>
+                        <p class="map-description">{{ map.description }}</p>
+                    </div>
+                    
+                    <div class="map-card-body">
+                        {% if forloop.first %}
+                        <div id="ulis-cluster-map" style="width:100%;height:420px;border-radius:8px;overflow:hidden"></div>
+                        {% else %}
+                        <div class="map-preview">
+                            <div class="map-placeholder">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <p>Map visualization unavailable</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="map-card-footer">
+                        <a href="#" class="button button-secondary">
+                            <i class="fas fa-expand"></i> View Full Map
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Section Statistics -->
+        <div class="ml-section">
+            <h2>Cluster Statistics</h2>
+            
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3>Total ULIS Units</h3>
+                    <p class="stat-value">Data loading...</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Average Enrollment</h3>
+                    <p class="stat-value">Data loading...</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Geographic Coverage</h3>
+                    <p class="stat-value">Data loading...</p>
+                </div>
+                <div class="stat-item">
+                    <h3>Cluster Diversity</h3>
+                    <p class="stat-value">Data loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="ml-section">
+            <div class="navigation-links d-flex align-items-center justify-content-center" style="gap:12px;">
+                <a href="{% url 'ulis:ulis_predict' %}" class="button button-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Prediction
+                </a>
+
+                <label for="min-score" style="margin:0;">Min score:</label>
+                <input id="min-score" type="number" step="0.01" min="0" max="1" placeholder="0.4" style="width:110px;padding:6px;border-radius:4px;border:1px solid #ccc" />
+
+                <a id="export-csv" href="{% url 'ulis:ulis_cluster_export' %}" class="button button-secondary">
+                    <i class="fas fa-file-csv"></i> Export Priorities CSV
+                </a>
+
+                <div class="map-legend" style="display:inline-block;margin-left:12px;vertical-align:middle">
+                    <span style="display:inline-block;width:12px;height:12px;background:red;margin-right:6px;border-radius:2px"></span> High
+                    <span style="display:inline-block;width:12px;height:12px;background:orange;margin:0 6px 0 12px;border-radius:2px"></span> Medium
+                    <span style="display:inline-block;width:12px;height:12px;background:green;margin:0 6px 0 12px;border-radius:2px"></span> Low
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+/* ULIS Cluster Maps Specific Styles */
+
+.cluster-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-lg);
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-content h3 {
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.stat-label {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.stat-description {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.maps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.map-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+}
+
+.map-card-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.map-card-header h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--primary);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.map-description {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.map-card-body {
+    flex: 1;
+    padding: var(--spacing-lg);
+}
+
+.map-preview {
+    aspect-ratio: 16 / 9;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--background-alt);
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    color: var(--text-light);
+}
+
+.map-placeholder i {
+    font-size: 2.5rem;
+    opacity: 0.5;
+}
+
+.map-card-footer {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--border-color-light);
+    text-align: center;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat-item {
+    background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
+    color: white;
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.stat-item h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.stat-value {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.navigation-links {
+    text-align: center;
+    padding: var(--spacing-lg);
+}
+
+.navigation-links .button {
+    display: inline-flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cluster-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .maps-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        flex-direction: column;
+    }
+
+    .stat-icon {
+        justify-content: flex-start;
+    }
+}
+</style>
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script>
+// Fetch cluster data and render Leaflet map
+fetch('{% url "ulis:ulis_cluster_data" %}')
+    .then(r => r.json())
+    .then(data => {
+        const mapDiv = document.getElementById('ulis-cluster-map');
+        if (!mapDiv) return;
+
+        const map = L.map('ulis-cluster-map').setView([46.6, 2.5], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Render points using marker clustering
+        const points = data.points || [];
+        const markers = L.markerClusterGroup();
+        points.forEach(p => {
+            const color = p.color || '#2b6cb0';
+            const marker = L.circleMarker([p.lat, p.lng], {
+                radius: 6,
+                fillColor: color,
+                color: color,
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            });
+            const popup = `<strong>${p.departement || 'Zone'}</strong><br>Type: ${p.type}<br>Score: ${p.score}`;
+            marker.bindPopup(popup);
+            markers.addLayer(marker);
+        });
+        map.addLayer(markers);
+
+        // Add simple legend with cluster summaries
+        const clusters = data.clusters || [];
+        const legend = L.control({position: 'bottomright'});
+        legend.onAdd = function () {
+            const div = L.DomUtil.create('div', 'info legend');
+            div.style.background = 'white';
+            div.style.padding = '8px';
+            div.style.borderRadius = '6px';
+            div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.15)';
+            div.innerHTML = '<h4 style="margin:0 0 6px 0">Clusters</h4>';
+            clusters.forEach(c => {
+                const pr = c.priority ? ` — ${c.priority}` : '';
+                const row = `<div style="margin-bottom:6px"><strong>Cluster ${c.cluster_id}</strong>: ${c.count} départements — avg inclusifs ${c.avg_inclusif_prop}${pr}</div>`;
+                div.innerHTML += row;
+            });
+            div.innerHTML += '<div style="margin-top:8px;font-size:0.9rem">Legend: <strong>High Priority</strong> = low ULIS presence → prioritize actions.</div>';
+            return div;
+        };
+        legend.addTo(map);
+        
+        // Add quick preset buttons and explanatory note above the map
+        const container = document.querySelector('.map-card-body');
+        if (container) {
+            const ctrl = document.createElement('div');
+            ctrl.style.margin = '8px 0';
+            ctrl.innerHTML = `
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <div style="font-size:0.95rem">Quick filters:</div>
+                    <button id="preset-high" class="btn btn-sm btn-danger">High</button>
+                    <button id="preset-medium" class="btn btn-sm btn-warning">Medium</button>
+                    <button id="preset-all" class="btn btn-sm btn-secondary">All</button>
+                    <div style="margin-left:12px;font-size:0.9rem;color:#555">Tip: use presets to quickly export prioritized sites.</div>
+                </div>
+            `;
+            container.insertBefore(ctrl, container.firstChild);
+
+            // wire up presets
+            const setMin = (v) => {
+                const inp = document.getElementById('min-score');
+                if (!inp) return;
+                inp.value = v;
+            };
+            document.getElementById('preset-high').addEventListener('click', () => setMin('0.7'));
+            document.getElementById('preset-medium').addEventListener('click', () => setMin('0.4'));
+            document.getElementById('preset-all').addEventListener('click', () => setMin(''));
+        }
+    })
+    .catch(err => console.error('Failed to load cluster data', err));
+</script>
+<script>
+// Attach export behavior: append min_score query when clicking export
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('export-csv');
+    if (!btn) return;
+    btn.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        const inp = document.getElementById('min-score');
+        const val = inp ? inp.value : '';
+        let url = this.href;
+        if (val !== null && val !== undefined && val !== '') {
+            const sep = url.indexOf('?') === -1 ? '?' : '&';
+            url = url + sep + 'min_score=' + encodeURIComponent(val);
+        }
+        window.location.href = url;
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}
+ 

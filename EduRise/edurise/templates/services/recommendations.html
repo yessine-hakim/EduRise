@@ -1,0 +1,959 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Services Recommendations{% endblock %}
+
+{% block extra_head %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+{% endblock %}
+
+{% block content %}
+<section class="ml-page recommendations-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Services Recommendations</h1>
+            <p class="page-subtitle">AI-driven insights for new restauration and hébergement locations based on
+                department clustering.</p>
+        </div>
+
+        <div class="module-description">
+            <h2>Module Purpose</h2>
+            <p>The Recommendations module provides strategic insights for optimizing educational services coverage. By
+                leveraging department clustering and priority scoring, it identifies the most impactful locations for
+                establishing new restauration and hébergement facilities, ensuring resources are directed where they are
+                needed most.</p>
+        </div>
+
+        <div class="ml-section">
+            <h2>Recommendation Map</h2>
+            <div class="map-container-card">
+                <!-- Map Container -->
+                <div class="map-wrapper">
+                    <div id="map"></div>
+
+                    <!-- Loading Indicator -->
+                    <div id="map-loader" class="map-overlay-loader">
+                        <div class="spinner"></div>
+                        <span>Loading Map Data...</span>
+                    </div>
+                </div>
+
+                <!-- Map Legend -->
+                <div class="map-legend-modern">
+                    <div class="legend-group">
+                        <h3>Service Coverage</h3>
+                        <div class="legend-scale">
+                            <div class="scale-item"><span class="scale-box low"></span>Low</div>
+                            <div class="scale-item"><span class="scale-box med"></span>Medium</div>
+                            <div class="scale-item"><span class="scale-box high"></span>High</div>
+                        </div>
+                    </div>
+
+                    <div class="legend-group">
+                        <h3>Top Recommendations (Max 20/Type)</h3>
+                        <div class="legend-markers">
+                            <div class="marker-item" data-service="restauration">
+                                <span class="marker-icon icon-rest">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                        class="lucide lucide-utensils">
+                                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                                        <path d="M7 2v20"></path>
+                                        <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                                    </svg>
+                                </span>
+                                <span>Restauration</span>
+                            </div>
+                            <div class="marker-item" data-service="hebergement">
+                                <span class="marker-icon icon-heb">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                                        class="lucide lucide-bed">
+                                        <path d="M2 4v16"></path>
+                                        <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
+                                        <path d="M2 17h20"></path>
+                                        <path d="M6 8v9"></path>
+                                    </svg>
+                                </span>
+                                <span>Hébergement</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ml-section">
+            <h2>Recommendations Details</h2>
+
+            <!-- Filter Section -->
+            <div class="exploration-card">
+                <div class="filter-header">
+                    <h3>Filter Recommendations</h3>
+                </div>
+                <form method="get" class="modern-filter-form compact-filter" id="filter-form">
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label for="department">Department</label>
+                            <select name="department" id="department" class="form-control">
+                                <option value="">All Departments</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept.Code_departement }}" {% if selected_dept == dept.Code_departement %}selected{% endif %}>
+                                    {{ dept.Code_departement }} - {{ dept.Libelle_departement }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="service_type">Service Type</label>
+                            <select name="service_type" id="service_type" class="form-control">
+                                <option value="">All Services</option>
+                                <option value="restauration" {% if selected_type == 'restauration' %}selected{% endif %}>
+                                    Restauration</option>
+                                <option value="hebergement" {% if selected_type == 'hebergement' %}selected{% endif %}>
+                                    Hébergement</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button type="submit" class="button button-primary" id="apply-filters-btn">Apply
+                                Filters</button>
+                            {% if selected_dept or selected_type %}
+                            <button type="button" class="button button-secondary" id="clear-filters-btn">Clear</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Recommendations Table -->
+                <div class="table-wrapper spaced-table">
+                    <div class="table-header">
+                        <h3>Detailed List</h3>
+                    </div>
+                    <div class="responsive-table-outer">
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Institution</th>
+                                    <th>Type</th>
+                                    <th>Service</th>
+                                    <th>Department</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recommendations-tbody">
+                                {% for item in page_obj %}
+                                <tr>
+                                    <td class="col-institution">{{ item.Nom_etablissement }}</td>
+                                    <td class="col-type">{{ item.Type_etablissement }}</td>
+                                    <td class="col-service">
+                                        {% if item.Service_Type == 'Restauration' %}
+                                        <span class="badge badge-rest">Restauration</span>
+                                        {% else %}
+                                        <span class="badge badge-heb">Hébergement</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="col-dept">{{ item.Libelle_departement }}</td>
+                                    <td class="col-score">{{ item.overall_priority_score|floatformat:2 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="empty-table-message">
+                                        No recommendations found matching your criteria.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="pagination-container" class="pagination-modern"
+     {% if not page_obj.has_other_pages %}style="display: none;"{% endif %}>
+
+    {% if page_obj.has_other_pages %}
+
+        {% if page_obj.has_previous %}
+            <a href="#" data-page="1" class="page-link pagination-link">&laquo; First</a>
+            <a href="#" data-page="{{ page_obj.previous_page_number }}"
+               class="page-link pagination-link">Prev</a>
+        {% endif %}
+
+        <span class="page-info">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="#" data-page="{{ page_obj.next_page_number }}"
+               class="page-link pagination-link">Next</a>
+            <a href="#" data-page="{{ page_obj.paginator.num_pages }}"
+               class="page-link pagination-link">Last &raquo;</a>
+        {% endif %}
+
+    {% endif %}
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+<style>
+    /* Recommendations Page Specific Styles */
+    .recommendations-page .map-container-card {
+        background: var(--background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: var(--spacing-md);
+        box-shadow: var(--shadow-md);
+        margin-bottom: var(--spacing-xl);
+        overflow: hidden;
+    }
+
+    .recommendations-page .map-wrapper {
+        position: relative;
+        height: 500px;
+        width: 100%;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--border-color-light);
+    }
+
+    #map {
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+    }
+
+    .map-overlay-loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        z-index: 1000;
+        backdrop-filter: blur(2px);
+    }
+
+    .map-overlay-loader .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border-color-light);
+        border-top-color: var(--secondary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .map-legend-modern {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--spacing-xl);
+        padding: var(--spacing-lg) var(--spacing-md) var(--spacing-md);
+        background: var(--background-alt);
+        border-top: 1px solid var(--border-color-light);
+    }
+
+    .legend-group h3 {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: var(--spacing-sm);
+        font-weight: 600;
+    }
+
+    .legend-scale,
+    .legend-markers {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .marker-item {
+        cursor: pointer;
+        transition: all 0.2s;
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        background: var(--background);
+        border: 1px solid transparent;
+    }
+
+    .marker-item:hover {
+        background: white;
+        border-color: var(--border-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .marker-item.inactive {
+        opacity: 0.5;
+        background: var(--background);
+    }
+
+    .marker-item.inactive .marker-icon {
+        filter: grayscale(1);
+    }
+
+    .scale-item,
+    .marker-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .scale-box {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .scale-box.low {
+        background: #FFEDA0;
+    }
+
+    .scale-box.med {
+        background: #FEB24C;
+    }
+
+    .scale-box.high {
+        background: #F03B20;
+    }
+
+    .marker-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
+
+    .icon-rest {
+        background: #983c49;
+    }
+
+    .icon-heb {
+        background: #16244e;
+    }
+
+    /* Exploration Card Styles */
+    .exploration-card {
+        background: var(--background);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+
+    .filter-header,
+    .table-header {
+        padding: var(--spacing-md) var(--spacing-lg);
+        background: var(--background-alt);
+        border-bottom: 1px solid var(--border-color-light);
+    }
+
+    .filter-header h3,
+    .table-header h3 {
+        font-size: 1.1rem;
+        color: var(--primary);
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .modern-filter-form.compact-filter {
+        padding: var(--spacing-md) var(--spacing-lg);
+    }
+
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: var(--spacing-md);
+        align-items: end;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .filter-group .form-control {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        height: auto;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        background-color: var(--background);
+        transition: all var(--transition-base);
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23182557' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 1rem;
+        padding-right: 2.5rem;
+    }
+
+    .filter-group .form-control:hover {
+        border-color: var(--secondary-light);
+        box-shadow: 0 0 0 4px rgba(152, 60, 73, 0.05);
+    }
+
+    .filter-group .form-control:focus {
+        border-color: var(--secondary);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(152, 60, 73, 0.1);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-actions .button {
+        padding: 0.5rem 1.25rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .spaced-table {
+        margin-top: 2.5rem;
+        border-top: 1px solid var(--border-color-light);
+    }
+
+    /* Table Styles */
+    .responsive-table-outer {
+        overflow-x: auto;
+    }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .modern-table th {
+        background: var(--background-alt);
+        padding: 1rem;
+        text-align: left;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-light);
+        border-bottom: 2px solid var(--border-color-light);
+    }
+
+    .modern-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color-light);
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        vertical-align: middle;
+    }
+
+    .modern-table tr:hover td {
+        background: rgba(24, 37, 87, 0.02);
+    }
+
+    .badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-rest {
+        color: #983c49;
+        background: rgba(152, 60, 73, 0.15);
+        /* lighter tint of text color */
+    }
+
+    .badge-heb {
+        color: #16244e;
+        background: rgba(30, 90, 220, 0.15);
+    }
+
+    .col-score {
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .empty-table-message {
+        padding: 3rem !important;
+        text-align: center;
+        color: var(--text-lighter);
+        font-style: italic;
+    }
+
+    /* Pagination */
+    .pagination-modern {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding: var(--spacing-lg);
+        background: var(--background-alt);
+    }
+
+    .page-link {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        color: var(--text-dark);
+        background: var(--background);
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .page-link:hover {
+        border-color: var(--secondary);
+        color: var(--secondary);
+    }
+
+    .page-info {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-light);
+    }
+
+    /* Loading state for AJAX filtering */
+    #recommendations-tbody {
+        transition: opacity 0.2s ease;
+    }
+
+    #apply-filters-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .filter-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-actions {
+            justify-content: stretch;
+        }
+
+        .filter-actions .button {
+            flex: 1;
+            text-align: center;
+        }
+    }
+</style>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Prevent multiple initializations
+        if (window.EduRiseRecommendationsMapInitialized) {
+            console.warn('Recommendations map already initialized; skipping duplicate init.');
+            return;
+        }
+
+        try {
+            // Data from Context
+            const mapData = JSON.parse('{{ map_recommendations|escapejs }}');
+            const clusterData = JSON.parse('{{ clusters|escapejs }}');
+
+            if (typeof L === 'undefined') {
+                throw new Error('Leaflet (L) is not loaded.');
+            }
+
+            // Processing Cluster Data
+            const clusterMap = {};
+            clusterData.forEach(item => {
+                clusterMap[item.Code_departement] = {
+                    cluster: item.Assigned_Cluster,
+                    coverage: item.Service_Coverage,
+                    name: item.Libelle_departement
+                };
+            });
+
+            // Initialize Map
+            const map = L.map('map', {
+                preferCanvas: true,
+                zoomControl: true,
+                scrollWheelZoom: true
+            }).setView([46.603354, 1.888334], 6);
+
+            // Marked as initialized early to prevent race conditions
+            window.EduRiseRecommendationsMapInitialized = true;
+            window.EduRiseExistingLeafletMap = map;
+
+            // Add base tile layer
+            const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            baseLayer.on('tileerror', (e) => {
+                console.error('Tile error:', e);
+            });
+
+            // Layers Management
+            const restLayer = L.layerGroup().addTo(map);
+            const hebLayer = L.layerGroup().addTo(map);
+            let geoJsonLayer;
+
+            const restSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-utensils"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path></svg>`;
+            const hebSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed"><path d="M2 4v16"></path><path d="M2 8h18a2 2 0 0 1 2 2v10"></path><path d="M2 17h20"></path><path d="M6 8v9"></path></svg>`;
+
+            const createIcon = (color, svg) => L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background-color: ${color}; width: 34px; height: 34px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white;">${svg}</div>`,
+                iconSize: [34, 34],
+                iconAnchor: [17, 34],
+                popupAnchor: [0, -34]
+            });
+
+            const restIcon = createIcon('#983c49', restSvg);
+            const hebIcon = createIcon('#16244e', hebSvg);
+
+            // Add Markers
+            mapData.forEach(item => {
+                if (item.latitude && item.longitude) {
+                    const lat = parseFloat(item.latitude);
+                    const lon = parseFloat(item.longitude);
+                    if (!isNaN(lat) && !isNaN(lon)) {
+                        const targetLayer = item.Service_Type === 'Restauration' ? restLayer : hebLayer;
+                        const icon = item.Service_Type === 'Restauration' ? restIcon : hebIcon;
+
+                        L.marker([lat, lon], { icon: icon })
+                            .bindPopup(`<h3>${item.Nom_etablissement}</h3><p>${item.Service_Type} | Score: ${Number(item.overall_priority_score).toFixed(2)}</p>`)
+                            .addTo(targetLayer);
+                    }
+                }
+            });
+
+            // Legend Interactivity
+            document.querySelectorAll('.marker-item').forEach(item => {
+                const service = item.getAttribute('data-service');
+                item.addEventListener('click', () => {
+                    const layer = service === 'restauration' ? restLayer : hebLayer;
+                    if (map.hasLayer(layer)) {
+                        map.removeLayer(layer);
+                        item.classList.add('inactive');
+                    } else {
+                        map.addLayer(layer);
+                        item.classList.remove('inactive');
+                    }
+                });
+            });
+
+            // Fetch GeoJSON
+            fetch('https://france-geojson.gregoiredavid.fr/repo/departements.geojson')
+                .then(res => {
+                    if (!res.ok) throw new Error(`GeoJSON fetch failed: ${res.status}`);
+                    return res.json();
+                })
+                .then(data => {
+                    try {
+                        geoJsonLayer = L.geoJson(data, {
+                            style: (f) => {
+                                const info = clusterMap[f.properties.code];
+                                let color = '#f8f9fa';
+                                if (info) {
+                                    if (info.cluster === 0) color = '#FFEDA0';
+                                    else if (info.cluster === 1) color = '#FEB24C';
+                                    else if (info.cluster === 2) color = '#F03B20';
+                                }
+                                return { fillColor: color, weight: 1, opacity: 1, color: 'white', dashArray: '3', fillOpacity: 0.6 };
+                            },
+                            onEachFeature: (f, layer) => {
+                                const info = clusterMap[f.properties.code];
+                                let content = `<h3>${f.properties.nom} (${f.properties.code})</h3>`;
+                                if (info) content += `<p>Cluster: ${info.cluster}<br>Coverage: ${info.coverage}</p>`;
+                                layer.bindPopup(content);
+                            }
+                        }).addTo(map);
+
+                        L.control.layers(null, { "Clusters": geoJsonLayer, "Restauration": restLayer, "Hébergement": hebLayer }).addTo(map);
+                    } catch (e) {
+                        console.error('GeoJSON layer error:', e);
+                    }
+
+                    // hide loader
+                    document.getElementById('map-loader').style.display = 'none';
+                    setTimeout(() => map.invalidateSize(), 300);
+                })
+                .catch(err => {
+                    console.error('GeoJSON fetch error:', err);
+                    // Still show recommendations even if cluster data fails
+                    recsLayer.addTo(map);
+                    L.control.layers(null, { "Restauration": restLayer, "Hébergement": hebLayer }).addTo(map);
+                    const loader = document.getElementById('map-loader');
+                    if (loader) {
+                        loader.innerHTML = `<span style="color:orange">Map loaded. Cluster data unavailable, showing recommendations.</span>`;
+                        setTimeout(() => loader.style.display = 'none', 3000);
+                    }
+                    setTimeout(() => map.invalidateSize(), 300);
+                });
+
+            // HANDLE RESPONSIVENESS
+            const handleResize = () => {
+                setTimeout(() => {
+                    if (map) map.invalidateSize();
+                }, 400); // Wait for CSS transitions (0.3s base + buffer)
+            };
+
+            window.addEventListener('sidebarToggled', handleResize);
+            window.addEventListener('resize', handleResize);
+
+        } catch (err) {
+            console.error('Init error:', err);
+            const loader = document.getElementById('map-loader');
+            if (loader) loader.innerHTML = `<span style="color:red">Error: ${err.message}</span>`;
+        }
+    });
+
+    // AJAX Filtering for Recommendations
+    (function () {
+        const filterForm = document.getElementById('filter-form');
+        const departmentSelect = document.getElementById('department');
+        const serviceTypeSelect = document.getElementById('service_type');
+        const applyBtn = document.getElementById('apply-filters-btn');
+        const clearBtn = document.getElementById('clear-filters-btn');
+        const tbody = document.getElementById('recommendations-tbody');
+        const paginationContainer = document.getElementById('pagination-container');
+        let isLoading = false;
+
+        // Store initial scroll position reference element
+        const tableWrapper = document.querySelector('.table-wrapper');
+
+        // Function to build query string from form
+        function buildQueryString(page = 1) {
+            const params = new URLSearchParams();
+            if (departmentSelect.value) {
+                params.append('department', departmentSelect.value);
+            }
+            if (serviceTypeSelect.value) {
+                params.append('service_type', serviceTypeSelect.value);
+            }
+            if (page > 1) {
+                params.append('page', page);
+            }
+            return params.toString();
+        }
+
+        // Function to update URL without page refresh
+        function updateURL(queryString) {
+            const newURL = window.location.pathname + (queryString ? '?' + queryString : '');
+            window.history.pushState({ path: newURL }, '', newURL);
+        }
+
+        // Function to format score
+        function formatScore(score) {
+            if (score === null || score === undefined) return 'N/A';
+            return parseFloat(score).toFixed(2);
+        }
+
+        // Function to render table rows
+        function renderTableRows(items) {
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-table-message">No recommendations found matching your criteria.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = items.map(item => {
+                const serviceType = item.Service_Type || '';
+                const isRestauration = serviceType === 'Restauration';
+                const badgeClass = isRestauration ? 'badge-rest' : 'badge-heb';
+                const badgeText = isRestauration ? 'Restauration' : 'Hébergement';
+
+                return `
+                    <tr>
+                        <td class="col-institution">${item.Nom_etablissement || 'N/A'}</td>
+                        <td class="col-type">${item.Type_etablissement || 'N/A'}</td>
+                        <td class="col-service">
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                        </td>
+                        <td class="col-dept">${item.Libelle_departement || 'N/A'}</td>
+                        <td class="col-score">${formatScore(item.overall_priority_score)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Function to render pagination
+        function renderPagination(data) {
+            if (data.total_pages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
+            }
+
+            paginationContainer.style.display = 'flex';
+
+            let paginationHTML = '';
+
+            if (data.has_previous) {
+                paginationHTML += `<a href="#" data-page="1" class="page-link pagination-link">&laquo; First</a>`;
+                paginationHTML += `<a href="#" data-page="${data.previous_page_number}" class="page-link pagination-link">Prev</a>`;
+            }
+
+            paginationHTML += `<span class="page-info">Page ${data.current_page} of ${data.total_pages}</span>`;
+
+            if (data.has_next) {
+                paginationHTML += `<a href="#" data-page="${data.next_page_number}" class="page-link pagination-link">Next</a>`;
+                paginationHTML += `<a href="#" data-page="${data.total_pages}" class="page-link pagination-link">Last &raquo;</a>`;
+            }
+
+            paginationContainer.innerHTML = paginationHTML;
+
+            // Re-attach event listeners to pagination links
+            attachPaginationListeners();
+        }
+
+        // Function to attach pagination event listeners
+        function attachPaginationListeners() {
+            const paginationLinks = paginationContainer.querySelectorAll('.pagination-link');
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const page = parseInt(this.getAttribute('data-page'));
+                    if (page && !isLoading) {
+                        loadRecommendations(page);
+                    }
+                });
+            });
+        }
+
+        // Function to load recommendations via AJAX
+        function loadRecommendations(page = 1) {
+            if (isLoading) return;
+
+            isLoading = true;
+            const queryString = buildQueryString(page);
+            const apiUrl = '{% url "services:recommendations_api" %}' + (queryString ? '?' + queryString : '');
+
+            // Store scroll position before loading
+            const scrollPosition = window.scrollY;
+            const tableScrollPosition = tableWrapper ? tableWrapper.scrollTop : 0;
+
+            // Show loading state
+            applyBtn.disabled = true;
+            applyBtn.textContent = 'Loading...';
+            tbody.style.opacity = '0.5';
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Update table
+                    renderTableRows(data.items);
+
+                    // Update pagination
+                    renderPagination(data);
+
+                    // Update URL
+                    updateURL(queryString);
+
+                    // Restore scroll position
+                    window.scrollTo(0, scrollPosition);
+                    if (tableWrapper) {
+                        tableWrapper.scrollTop = tableScrollPosition;
+                    }
+
+                    // Update clear button visibility
+                    const currentClearBtn = document.getElementById('clear-filters-btn');
+                    if (departmentSelect.value || serviceTypeSelect.value) {
+                        if (!currentClearBtn) {
+                            // Create clear button if it doesn't exist
+                            const filterActions = document.querySelector('.filter-actions');
+                            const newClearBtn = document.createElement('button');
+                            newClearBtn.type = 'button';
+                            newClearBtn.className = 'button button-secondary';
+                            newClearBtn.id = 'clear-filters-btn';
+                            newClearBtn.textContent = 'Clear';
+                            filterActions.appendChild(newClearBtn);
+                            newClearBtn.addEventListener('click', clearFilters);
+                        }
+                    } else if (currentClearBtn) {
+                        currentClearBtn.remove();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading recommendations:', error);
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-table-message" style="color: red;">Error loading recommendations. Please try again.</td></tr>';
+                })
+                .finally(() => {
+                    isLoading = false;
+                    applyBtn.disabled = false;
+                    applyBtn.textContent = 'Apply Filters';
+                    tbody.style.opacity = '1';
+                });
+        }
+
+        // Function to clear filters
+        function clearFilters() {
+            departmentSelect.value = '';
+            serviceTypeSelect.value = '';
+            loadRecommendations(1);
+        }
+
+        // Prevent form submission and use AJAX instead
+        if (filterForm) {
+            filterForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!isLoading) {
+                    loadRecommendations(1);
+                }
+            });
+        }
+
+        // Clear button handler (handle both existing and dynamically created buttons)
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'clear-filters-btn') {
+                e.preventDefault();
+                clearFilters();
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function (e) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dept = urlParams.get('department') || '';
+            const type = urlParams.get('service_type') || '';
+            const page = parseInt(urlParams.get('page') || '1');
+
+            departmentSelect.value = dept;
+            serviceTypeSelect.value = type;
+            loadRecommendations(page);
+        });
+
+        // Initial pagination listeners
+        attachPaginationListeners();
+    })();
+</script>
+{% endblock %} 

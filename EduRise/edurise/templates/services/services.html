@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Services - EduRise{% endblock %}
+{% block meta_description %}Services - EduRise{% endblock %}
+
+{% block content %}
+
+<section class="ml-page services-page">
+    <div class="container">
+        <div class="page-header">
+            <h1>Service Prediction</h1>
+            <p class="page-subtitle">Predict service availability for institutions</p>
+        </div>
+
+        <div class="module-description">
+            <h2>Module Purpose</h2>
+            <p>The Services module predicts the availability and delivery quality of educational services within
+                institutions. It analyzes institutional characteristics, enrollment patterns, and resource allocation to
+                forecast service performance and identify potential gaps in service delivery.</p>
+        </div>
+
+        <div class="prediction-container">
+            <div class="form-wrapper">
+                <div class="ml-section">
+                    <h2>Input Form</h2>
+                    <div class="input-form">
+                        <form method="post" action="{% url 'services:services_list' %}" class="services-form"
+                            id="predictionForm">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                            <div class="error-message">
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
+
+                            <div class="form-section-group">
+                                <div class="form-section-header">
+                                    <h3>Select Model</h3>
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ form.model_type.id_for_label }}">{{ form.model_type.label }}</label>
+                                    {{ form.model_type }}
+                                    {% if form.model_type.help_text %}
+                                    <small class="form-text">{{ form.model_type.help_text }}</small>
+                                    {% endif %}
+                                    {% if form.model_type.errors %}
+                                    <div class="error-message">{{ form.model_type.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-section-group">
+                                <div class="form-section-header">
+                                    <h3>Institution Details</h3>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.code_departement.id_for_label }}">Department Code</label>
+                                        {{ form.code_departement }}
+                                        {% if form.code_departement.errors %}
+                                        <div class="error-message">{{ form.code_departement.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.code_region.id_for_label }}">Region Code</label>
+                                        {{ form.code_region }}
+                                        {% if form.code_region.errors %}
+                                        <div class="error-message">{{ form.code_region.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.type_etablissement.id_for_label }}">Institution Type</label>
+                                        {{ form.type_etablissement }}
+                                        {% if form.type_etablissement.errors %}
+                                        <div class="error-message">{{ form.type_etablissement.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.statut_public_prive.id_for_label }}">Status</label>
+                                        {{ form.statut_public_prive }}
+                                        {% if form.statut_public_prive.errors %}
+                                        <div class="error-message">{{ form.statut_public_prive.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.libelle_nature.id_for_label }}">Nature</label>
+                                    {{ form.libelle_nature }}
+                                    {% if form.libelle_nature.errors %}
+                                    <div class="error-message">{{ form.libelle_nature.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-section-group">
+                                <div class="form-section-header">
+                                    <h3>Enrollment Data</h3>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.nombre_eleves_totale.id_for_label }}">Total Students per
+                                            Department</label>
+                                        {{ form.nombre_eleves_totale }}
+                                        {% if form.nombre_eleves_totale.errors %}
+                                        <div class="error-message">{{ form.nombre_eleves_totale.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.eleves_per_class_last.id_for_label }}">Students per
+                                            Class</label>
+                                        {{ form.eleves_per_class_last }}
+                                        {% if form.eleves_per_class_last.errors %}
+                                        <div class="error-message">{{ form.eleves_per_class_last.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="{{ form.latitude.id_for_label }}">Latitude</label>
+                                        {{ form.latitude }}
+                                        {% if form.latitude.errors %}
+                                        <div class="error-message">{{ form.latitude.errors }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.ulis.id_for_label }}">ULIS</label>
+                                        {{ form.ulis }}
+                                        {% if form.ulis.errors %}
+                                        <div class="error-message">{{ form.ulis.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="button button-primary">Generate Prediction</button>
+                                <button type="reset" class="button button-secondary">Clear Form</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-wrapper">
+                <div class="history-card">
+                    <h2>Prediction History</h2>
+
+                    <div class="history-list">
+                        {% for item in history %}
+                        <div class="history-item" data-history-id="{{ item.id }}" data-model="{{ item.model_type }}"
+                            onclick="refillForm(this)">
+
+                            <!-- JSON for JS refill (hidden, correct usage) -->
+                            {% with item_id=item.id|slugify %}
+                            {% with script_id="input-data-"|add:item_id %}
+                            {{ item.input_data|json_script:script_id }}
+                            {% endwith %}
+                            {% endwith %}
+
+                            <div class="history-item-header">
+                                <span class="history-type">{{ item.model_type|capfirst }}</span>
+                                <span class="history-date">
+                                    {{ item.created_at|date:"M d, H:i" }}
+                                </span>
+                            </div>
+
+                            <!-- MAIN DETAILS -->
+                            <div class="history-details">
+                                <span class="detail-tag">
+                                    Dept: {{ item.input_data.code_departement|default:"—" }}
+                                </span>
+                                <span class="detail-tag">
+                                    Type: {{ item.input_data.type_etablissement|default:"—" }}
+                                </span>
+                                <span class="detail-tag">
+                                    Status: {{ item.input_data.statut_public_prive|default:"—" }}
+                                </span>
+                            </div>
+
+                            <!-- RESULT -->
+                            <div class="history-result">
+                                <span class="result-dot
+                                    {% if item.prediction_result.prediction == 1 %}
+                                        dot-yes
+                                    {% else %}
+                                        dot-no
+                                    {% endif %}
+                                "></span>
+
+                                <span>
+                                    Predicted:
+                                    {{ item.prediction_result.prediction_label|default:"N/A" }}
+                                </span>
+                            </div>
+
+                        </div>
+                        {% empty %}
+                        <div class="empty-history">
+                            <p>No prediction history yet.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if prediction_result %}
+        <div class="ml-section">
+            <h2>Results</h2>
+            <div class="output-container">
+                <div class="output-card">
+                    <h3>Prediction Result</h3>
+                    <div class="chart-placeholder">
+                        <div class="quality-gauge">
+                            <div class="gauge-value"
+                                style="color: {% if prediction_result.prediction == 1 %}#4CAF50{% else %}#f44336{% endif %}">
+                                {{ prediction_result.prediction_label }}
+                            </div>
+                            <span>{{ prediction_result.model_used|title }} Model</span>
+                        </div>
+                    </div>
+                    <p>Predicted class: {{ prediction_result.prediction }} ({{ prediction_result.prediction_label }})
+                    </p>
+                </div>
+
+                {% if prediction_result.probability %}
+                <div class="output-card">
+                    <h3>Prediction Confidence</h3>
+                    <div class="chart-placeholder">
+                        <div class="efficiency-bar">
+                            <div class="efficiency-fill"
+                                style="width: {% widthratio prediction_result.probability.1 1 100 %}%;">
+                            </div>
+                            <span>{% widthratio prediction_result.probability.1 1 100 %}%</span>
+                        </div>
+                    </div>
+                    <p>Probability of "Yes" (class 1): {{ prediction_result.probability.1|floatformat:3 }}</p>
+                    <p>Probability of "No" (class 0): {{ prediction_result.probability.0|floatformat:3 }}</p>
+                </div>
+                {% endif %}
+
+                <div class="output-card">
+                    <h3>Model Information</h3>
+                    <div class="chart-placeholder">
+                        <p><strong>Model Used:</strong> {{ prediction_result.model_used|title }}</p>
+                        <p><strong>Prediction:</strong> {{ prediction_result.prediction_label }}</p>
+                        <p><strong>Features Analyzed:</strong> 9</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ml-section">
+            <h2>Insights</h2>
+            <div class="insights">
+                <div class="insight-item">
+                    <h4>Prediction Analysis</h4>
+                    <p>Based on the input features, the {{ prediction_result.model_used|title }} model predicts
+                        <strong>{{ prediction_result.prediction_label }}</strong> for service availability.
+                        {% if prediction_result.probability %}
+                        The model is {% widthratio prediction_result.probability.1 1 100 %}% confident in this
+                        prediction.
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="insight-item">
+                    <h4>Key Factors</h4>
+                    <p>
+                        The prediction is based on institutional characteristics including
+                        location (department {{ prediction_result.features_used.Code_departement }},
+                        region {{ prediction_result.features_used.Code_region }}),
+                        enrollment ({{ prediction_result.features_used.Nombre_Eleves_Totale }} students),
+                        and institutional type.
+                    </p>
+                </div>
+                <div class="insight-item">
+                    <h4>Model Details</h4>
+                    <p>This prediction uses a Random Forest classifier trained on historical educational institution
+                        data.
+                        The model analyzes 9 key features to determine service availability patterns.</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="ml-section">
+            <h2>Results</h2>
+            <div class="output-container">
+                <div class="output-card">
+                    <h3>Awaiting Input</h3>
+                    <p>Complete the form above and submit to view prediction results.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    function refillForm(element) {
+        // Remove active class from all items
+        document.querySelectorAll('.history-item').forEach(item => item.classList.remove('active'));
+        // Add active class to clicked item
+        element.classList.add('active');
+
+        try {
+            // Get data from attributes
+            const model = element.getAttribute('data-model');
+            const historyId = element.getAttribute('data-history-id');
+
+            // Find the JSON script element with the correct ID format
+            const jsonScriptId = 'input-data-' + historyId;
+            const jsonScript = document.getElementById(jsonScriptId);
+
+            if (!jsonScript) {
+                console.error('JSON script element not found with ID:', jsonScriptId);
+                return;
+            }
+
+            const values = JSON.parse(jsonScript.textContent);
+
+            const form = document.getElementById('predictionForm');
+
+            if (!form) {
+                console.error('Form not found with ID: predictionForm');
+                return;
+            }
+
+            // Set model type
+            const modelSelect = form.querySelector('[name="model_type"]');
+            if (modelSelect) {
+                modelSelect.value = model;
+                modelSelect.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // Set other fields
+            for (const [key, value] of Object.entries(values)) {
+                const input = form.querySelector(`[name="${key}"]`);
+                if (input) {
+                    // Handle different input types
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = value;
+                    } else if (input.tagName === 'SELECT') {
+                        // For select elements, convert value to string to ensure matching
+                        input.value = (value !== null && value !== undefined) ? String(value) : '';
+
+                        // If value doesn't exist in options, try to find it
+                        if (!input.options[input.selectedIndex] || input.options[input.selectedIndex].value !== String(value)) {
+                            // Try to find option by value
+                            const option = Array.from(input.options).find(opt => opt.value === String(value));
+                            if (option) {
+                                input.value = option.value;
+                            }
+                        }
+                    } else {
+                        // For text, number, and other inputs, set value directly
+                        input.value = (value !== null && value !== undefined) ? value : '';
+                    }
+                    // Trigger change event for any listeners
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                } else {
+                    console.warn(`Form field not found: ${key}`);
+                }
+            }
+
+            // Scroll to form top smoothly
+            form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Optional: Show a subtle notification
+            console.log('Form refilled with history item:', model, values);
+        } catch (e) {
+            console.error('Error refilling form:', e);
+            alert('Error loading prediction data. Please try again.');
+        }
+    }
+</script>
+{% endblock %} 

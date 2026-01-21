@@ -1,0 +1,286 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Recommandations Institutions - EduRise{% endblock %}
+{% block meta_description %}Cartes, hotspots et priorités pour les nouvelles institutions{% endblock %}
+
+{% block content %}
+<section class="institutions-reco-page">
+    <div class="container">
+        <header class="page-hero">
+            <div>
+                <p class="eyebrow">Planification territoriale • Données ML & cartographie</p>
+                <h1>Où construire, renforcer et prioriser les institutions ?</h1>
+                <p class="lede">Nous croisons cartes interactives, zones surchargées et recommandations issues des clusters pour guider les nouvelles ouvertures d'établissements.</p>
+            </div>
+        </header>
+
+        <section class="map-grid">
+            <div class="section-heading">
+                <h2>Carte principale</h2>
+                <p>Choisissez la couche à visualiser : une seule carte est chargée à la fois.</p>
+            </div>
+
+            <div class="map-card">
+                <div class="map-header map-header-flex">
+                    <div>
+                        <h3 id="map-title">Vue globale</h3>
+                        <p id="map-desc">Lecture complète du territoire pour situer les besoins.</p>
+                    </div>
+                    <div class="map-actions">
+                        {% for map in map_cards %}
+                        <button class="pill-btn map-choice" data-url="{% static map.file %}" data-title="{{ map.title }}" data-desc="{{ map.desc }}">{{ map.title }}</button>
+                        {% endfor %}
+                        <button class="pill-btn outline" id="openMapModal">Popup</button>
+                    </div>
+                </div>
+                <div class="map-frame">
+                    <iframe id="mainMapFrame" src="{% static map_cards.0.file %}" loading="lazy" title="Carte institutions"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <section class="story-block search-block">
+            <div class="section-heading">
+                <h2>Recherche par département</h2>
+                <p>Choisissez un département pour voir le volume total et les établissements surchargés.</p>
+            </div>
+            <div class="search-card">
+                <label for="deptSelect">Département</label>
+                <div class="search-row">
+                    <select id="deptSelect">
+                        <option value="">Sélectionnez un département</option>
+                        {% for dep in departments_metrics %}
+                        <option value="{{ dep.code }}" data-name="{{ dep.name }}" data-total="{{ dep.total_etab }}" data-surcharges="{{ dep.nb_surcharges }}">{{ dep.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="deptResult" class="search-result-inline">Sélectionnez un département</div>
+                </div>
+            </div>
+        </section>
+
+        <details class="story-block" open>
+            <summary class="section-heading clickable">
+                <h2>Où agir en premier ?</h2>
+                <p>Départements à plus forte surcharge (part d'établissements surchargés, danger et action recommandée).</p>
+            </summary>
+            <div class="cards-grid">
+                {% for d in priority_departments %}
+                <div class="data-card">
+                    <div class="card-top">
+                        <h3>{{ d.departement }}</h3>
+                        <span class="pill">Danger : {{ d.danger }}</span>
+                    </div>
+                    <ul class="meta-list">
+                        <li><span>Établissements :</span> {{ d.total_etab }}</li>
+                        <li><span>Surcharges :</span> {{ d.surcharge_pct|floatformat:1 }}%</li>
+                        <li><span>Restauration :</span> {{ d.taux_restauration }}%</li>
+                        <li><span>Hébergement :</span> {{ d.taux_hebergement }}%</li>
+                    </ul>
+                    <div class="action">Action: {{ d.action }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+
+        <details class="story-block">
+            <summary class="section-heading clickable">
+                <h2>Départements où ouvrir de nouvelles institutions</h2>
+                <p>Scoring basé sur surcharge, distance moyenne et taille des établissements.</p>
+            </summary>
+            <div class="cards-grid three-cols">
+                {% for r in new_institution_departments %}
+                <div class="data-card">
+                    <div class="card-top">
+                        <h3>{{ r.departement }}</h3>
+                        <span class="pill strong">Score: {{ r.score|floatformat:1 }}</span>
+                    </div>
+                    <ul class="meta-list">
+                        <li><span>Établissements surchargés :</span> {{ r.nb_surcharges }}</li>
+                        <li><span>Élèves concernés :</span> {{ r.eleves }}</li>
+                        <li><span>Distance moyenne :</span> {{ r.distance|floatformat:2 }} km</li>
+                        <li><span>Élèves par établissement :</span> {{ r.eleves_par_etab|floatformat:1 }}</li>
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+
+
+        <details class="story-block">
+            <summary class="section-heading clickable">
+                <h2>Sites optimaux de construction</h2>
+                <p>Emplacements proposés (priorité « élevée » en premier), à convertir en projets concrets.</p>
+            </summary>
+            <div class="cards-grid three-cols">
+                {% for o in optimal_zones %}
+                <div class="data-card">
+                    <div class="card-top">
+                        <h3>{{ o.departement }}</h3>
+                        <span class="pill">Priorité {{ o.priorite }}</span>
+                    </div>
+                    <ul class="meta-list">
+                        <li><span>Établissements existants :</span> {{ o.nb_etab }}</li>
+                        <li><span>Élèves :</span> {{ o.eleves }}</li>
+                        <li><span>Lat/Lng :</span> {{ o.lat }}, {{ o.lng }}</li>
+                    </ul>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+</section>
+
+<div id="mapModal" class="modal-overlay" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-label="Carte en popup">
+        <div class="modal-header">
+            <h3>Carte en plein écran</h3>
+            <button id="closeMapModal" class="pill-btn outline">Fermer</button>
+        </div>
+        <div class="modal-body">
+            <iframe id="modalMapFrame" src="" loading="lazy" title="Carte institutions - popup"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.map-choice');
+    const mainFrame = document.getElementById('mainMapFrame');
+    const mapTitle = document.getElementById('map-title');
+    const mapDesc = document.getElementById('map-desc');
+    const modal = document.getElementById('mapModal');
+    const modalFrame = document.getElementById('modalMapFrame');
+    const openModalBtn = document.getElementById('openMapModal');
+    const closeModalBtn = document.getElementById('closeMapModal');
+    const predictBtn = document.getElementById('predictMapBtn');
+    const deptSelect = document.getElementById('deptSelect');
+    const deptResult = document.getElementById('deptResult');
+    let currentUrl = mainFrame ? mainFrame.src : '';
+
+    const setMap = (url, title, desc, button) => {
+        if (!url || !mainFrame) return;
+        currentUrl = url;
+        mainFrame.src = url;
+        if (mapTitle) mapTitle.textContent = title || 'Carte';
+        if (mapDesc) mapDesc.textContent = desc || '';
+        buttons.forEach((b) => b.classList.remove('active'));
+        if (button) {
+            button.classList.add('active');
+        } else {
+            buttons.forEach((b) => {
+                if (b.dataset.url === url) b.classList.add('active');
+            });
+        }
+    };
+
+    buttons.forEach((btn, idx) => {
+        btn.addEventListener('click', () => setMap(btn.dataset.url, btn.dataset.title, btn.dataset.desc, btn));
+        if (idx === 0) btn.classList.add('active');
+    });
+
+    if (predictBtn) {
+        predictBtn.addEventListener('click', () => {
+            setMap(predictBtn.dataset.url, predictBtn.dataset.title, predictBtn.dataset.desc, null);
+        });
+    }
+
+    const renderDept = (select) => {
+        if (!deptResult) return;
+        const selectedIdx = select.selectedIndex;
+        const selectedOpt = select.options[selectedIdx];
+        
+        if (!selectedOpt || !selectedOpt.value) {
+            deptResult.innerHTML = 'Sélectionnez un département';
+            return;
+        }
+        
+        const total = selectedOpt.getAttribute('data-total') || 'N/A';
+        const surcharges = selectedOpt.getAttribute('data-surcharges') || '0';
+        deptResult.innerHTML = `<strong>${total}</strong> étab. <span style="color:#666;">•</span> <strong>${surcharges}</strong> surchargés`;
+    };
+
+    if (deptSelect) {
+        deptSelect.addEventListener('change', (e) => renderDept(e.target));
+        renderDept(deptSelect);
+    }
+
+    if (openModalBtn && modal && modalFrame) {
+        openModalBtn.addEventListener('click', () => {
+            if (currentUrl) modalFrame.src = currentUrl;
+            modal.classList.add('open');
+        });
+    }
+
+    if (closeModalBtn && modal) {
+        const close = () => modal.classList.remove('open');
+        closeModalBtn.addEventListener('click', close);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) close();
+        });
+    }
+});
+</script>
+
+<style>
+.institutions-reco-page { padding: 40px 0 60px; }
+.page-hero { background: linear-gradient(135deg, #182557, #2a3a6b); color: #fff; padding: 32px; border-radius: 14px; margin-bottom: 32px; box-shadow: 0 10px 30px rgba(24,37,87,0.18); }
+.eyebrow { letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.85rem; opacity: 0.8; margin-bottom: 6px; }
+.page-hero h1 { margin: 6px 0 10px; font-size: 2rem; font-weight: 800; }
+.lede { font-size: 1rem; max-width: 820px; opacity: 0.95; }
+
+.section-heading { margin: 28px 0 16px; }
+.section-heading h2 { margin: 0 0 6px; font-size: 1.4rem; color: #182557; }
+.section-heading p { margin: 0; color: #555; }
+
+.map-grid .grid, .cards-grid { display: grid; gap: 16px; }
+.map-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+.map-header { padding: 14px 16px; border-bottom: 1px solid #e2e8f0; }
+.map-header-flex { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.map-header h3 { margin: 0 0 4px; font-size: 1.1rem; color: #182557; }
+.map-header p { margin: 0; color: #666; font-size: 0.95rem; }
+.map-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.pill-btn { border: 1px solid #d0d5dd; background: #fff; color: #182557; font-weight: 700; padding: 7px 12px; border-radius: 999px; cursor: pointer; transition: all 0.18s ease; font-size: 0.9rem; }
+.pill-btn:hover { background: #eef2ff; border-color: #c7d2fe; }
+.pill-btn.active { background: #182557; color: #fff; border-color: #182557; }
+.pill-btn.outline { background: #182557; color: #fff; border-color: #182557; }
+.map-frame { height: 580px; background: #f7f9fb; }
+.map-frame iframe { border: 0; width: 100%; height: 100%; border-radius: 0 0 12px 12px; }
+
+.cards-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.cards-grid.three-cols { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.data-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px; }
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-top h3 { margin: 0; font-size: 1.05rem; color: #182557; }
+.pill { background: #eef2ff; color: #4338ca; padding: 4px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; }
+.pill.strong { background: #e0f7e9; color: #15803d; }
+.meta-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.meta-list li { color: #444; font-size: 0.95rem; display: flex; justify-content: space-between; gap: 10px; }
+.meta-list span { color: #6b7280; font-weight: 600; }
+.action { font-size: 0.95rem; color: #0f172a; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 8px; }
+
+.search-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 8px; }
+.search-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.search-card select { min-width: 240px; padding: 8px 10px; border-radius: 10px; border: 1px solid #d0d5dd; font-weight: 600; color: #182557; background: #f8fafc; }
+.search-result-inline { background: #f0f4ff; border: 1px solid #c7d2fe; padding: 10px 14px; border-radius: 10px; color: #182557; font-size: 1.05rem; font-weight: 600; min-width: 220px; text-align: center; }
+
+details.story-block { border: 1px solid #e2e8f0; border-radius: 12px; padding: 6px 10px 14px; background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.04); margin-bottom: 18px; }
+details.story-block summary { list-style: none; }
+details.story-block summary::-webkit-details-marker { display: none; }
+.clickable { cursor: pointer; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 1200; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: #fff; border-radius: 14px; width: min(1100px, 96vw); height: min(85vh, 840px); box-shadow: 0 18px 40px rgba(0,0,0,0.16); display: flex; flex-direction: column; border: 1px solid #e2e8f0; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; }
+.modal-body { flex: 1; background: #f7f9fb; }
+.modal-body iframe { width: 100%; height: 100%; border: 0; border-radius: 0 0 14px 14px; }
+
+@media (max-width: 768px) {
+    .page-hero { padding: 24px; }
+    .page-hero h1 { font-size: 1.5rem; }
+    .map-frame { height: 300px; }
+    .map-actions { width: 100%; justify-content: flex-start; }
+}
+</style>
+{% endblock %} 

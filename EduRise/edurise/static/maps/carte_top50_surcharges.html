@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_ab3316745344a8095c22692743d5bf3e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+    <div style="position: fixed; top: 10px; left: 50px; width: 400px; 
+         background-color: white; border:2px solid grey; z-index:9999; padding: 10px;">
+         <h4 style="margin: 0; color: #FF6B6B;">🚨 Top 50 Établissements Surchargés</h4>
+         <p style="margin: 5px 0;">Zones prioritaires pour construction (données réelles)</p>
+    </div>
+    
+    
+            <div class="folium-map" id="map_ab3316745344a8095c22692743d5bf3e" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_ab3316745344a8095c22692743d5bf3e = L.map(
+                "map_ab3316745344a8095c22692743d5bf3e",
+                {
+                    center: [36.835789858000005, 9.904403650599999],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 6,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_5187a4e564eaff6c1a3ea2b3b0174aaf = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_5187a4e564eaff6c1a3ea2b3b0174aaf.addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var marker_d8bcfe7c4b8c9c49c9ef3b8571747cd8 = L.marker(
+                [48.85447862, 2.27844921],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_58257834743d3bfaf4b00f64d2bb182d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0b13f83da70cc3c49a04c5833db3bc47 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9d7363b637f14dc1e68a9a4a5e4ddc1b = $(`<div id="html_9d7363b637f14dc1e68a9a4a5e4ddc1b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 75<br>             <b>Type:</b> 0<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 1065<br>             • Classes: 38<br>             • Score: 654.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_0b13f83da70cc3c49a04c5833db3bc47.setContent(html_9d7363b637f14dc1e68a9a4a5e4ddc1b);
+            
+        
+
+        marker_d8bcfe7c4b8c9c49c9ef3b8571747cd8.bindPopup(popup_0b13f83da70cc3c49a04c5833db3bc47)
+        ;
+
+        
+    
+    
+            marker_d8bcfe7c4b8c9c49c9ef3b8571747cd8.bindTooltip(
+                `<div>
+                     Dept 75 - 1065 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d8bcfe7c4b8c9c49c9ef3b8571747cd8.setIcon(icon_58257834743d3bfaf4b00f64d2bb182d);
+            
+    
+            var marker_b2746a3461b953482133002ff854953b = L.marker(
+                [48.84463242, 2.24994166],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_1fa70a59192028f6495fd3a11ee8a141 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a25f8752c5bdc9c4a9dd1ea1d69436da = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f1b1eaa832278d7496ba815df768e348 = $(`<div id="html_f1b1eaa832278d7496ba815df768e348" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 903<br>             • Classes: 29<br>             • Score: 553.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_a25f8752c5bdc9c4a9dd1ea1d69436da.setContent(html_f1b1eaa832278d7496ba815df768e348);
+            
+        
+
+        marker_b2746a3461b953482133002ff854953b.bindPopup(popup_a25f8752c5bdc9c4a9dd1ea1d69436da)
+        ;
+
+        
+    
+    
+            marker_b2746a3461b953482133002ff854953b.bindTooltip(
+                `<div>
+                     Dept 92 - 903 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b2746a3461b953482133002ff854953b.setIcon(icon_1fa70a59192028f6495fd3a11ee8a141);
+            
+    
+            var marker_083767aff483d05be6e7cdc71adf0943 = L.marker(
+                [48.89508792, 2.28993963],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_b590287086414dec59c5afa9e3b67188 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_067a79ee0e8feb3eb175696144d7f3a7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_659507815bf2b133232e26c9ff2c9376 = $(`<div id="html_659507815bf2b133232e26c9ff2c9376" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 882<br>             • Classes: 32<br>             • Score: 542.00<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_067a79ee0e8feb3eb175696144d7f3a7.setContent(html_659507815bf2b133232e26c9ff2c9376);
+            
+        
+
+        marker_083767aff483d05be6e7cdc71adf0943.bindPopup(popup_067a79ee0e8feb3eb175696144d7f3a7)
+        ;
+
+        
+    
+    
+            marker_083767aff483d05be6e7cdc71adf0943.bindTooltip(
+                `<div>
+                     Dept 92 - 882 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_083767aff483d05be6e7cdc71adf0943.setIcon(icon_b590287086414dec59c5afa9e3b67188);
+            
+    
+            var marker_2c03d1915c635ae310e09d3df994101a = L.marker(
+                [48.87835412, 2.30636762],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_502caff54b2d8214e96425954bf31f5d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c214a550f4b20fc13cbbe588fbe83235 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_38fb7f6becdca1af07ed7ef9cee4fb76 = $(`<div id="html_38fb7f6becdca1af07ed7ef9cee4fb76" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 75<br>             <b>Type:</b> 0<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 873<br>             • Classes: 34<br>             • Score: 537.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_c214a550f4b20fc13cbbe588fbe83235.setContent(html_38fb7f6becdca1af07ed7ef9cee4fb76);
+            
+        
+
+        marker_2c03d1915c635ae310e09d3df994101a.bindPopup(popup_c214a550f4b20fc13cbbe588fbe83235)
+        ;
+
+        
+    
+    
+            marker_2c03d1915c635ae310e09d3df994101a.bindTooltip(
+                `<div>
+                     Dept 75 - 873 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2c03d1915c635ae310e09d3df994101a.setIcon(icon_502caff54b2d8214e96425954bf31f5d);
+            
+    
+            var marker_32de25ef6c150a3d3acf8b32e7360489 = L.marker(
+                [45.80725374, 4.84386684],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_95f98a4b6ca76231ded94f3ed306e5fe = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5559d130923e5467dd7192f49a9101df = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6c4c0ffbb5538c88596b1e4997798a6b = $(`<div id="html_6c4c0ffbb5538c88596b1e4997798a6b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 69<br>             <b>Type:</b> 0<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 810<br>             • Classes: 34<br>             • Score: 499.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_5559d130923e5467dd7192f49a9101df.setContent(html_6c4c0ffbb5538c88596b1e4997798a6b);
+            
+        
+
+        marker_32de25ef6c150a3d3acf8b32e7360489.bindPopup(popup_5559d130923e5467dd7192f49a9101df)
+        ;
+
+        
+    
+    
+            marker_32de25ef6c150a3d3acf8b32e7360489.bindTooltip(
+                `<div>
+                     Dept 69 - 810 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_32de25ef6c150a3d3acf8b32e7360489.setIcon(icon_95f98a4b6ca76231ded94f3ed306e5fe);
+            
+    
+            var marker_b367240018ca957f13acda549a8e4e0d = L.marker(
+                [49.40566423, 2.82904062],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_c5070e32e49be4c1b04df849a7ba6afa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8e7be013ed455919b35505f6e885837d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ba3d1724d2d6acd52288cc0c250101cf = $(`<div id="html_ba3d1724d2d6acd52288cc0c250101cf" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 60<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 797<br>             • Classes: 30<br>             • Score: 490.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_8e7be013ed455919b35505f6e885837d.setContent(html_ba3d1724d2d6acd52288cc0c250101cf);
+            
+        
+
+        marker_b367240018ca957f13acda549a8e4e0d.bindPopup(popup_8e7be013ed455919b35505f6e885837d)
+        ;
+
+        
+    
+    
+            marker_b367240018ca957f13acda549a8e4e0d.bindTooltip(
+                `<div>
+                     Dept 60 - 797 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b367240018ca957f13acda549a8e4e0d.setIcon(icon_c5070e32e49be4c1b04df849a7ba6afa);
+            
+    
+            var marker_3e92e5b8b88b385aa6833cb2f8d9d865 = L.marker(
+                [47.74686416, 7.31264988],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_938a41d6aad206d02eb8280fe7c04418 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_21fb8719a6f8d6281396895d6b0efdba = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f642de42b04d5c5c4a3dfbbe0e6d10b2 = $(`<div id="html_f642de42b04d5c5c4a3dfbbe0e6d10b2" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 68<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 789<br>             • Classes: 30<br>             • Score: 485.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_21fb8719a6f8d6281396895d6b0efdba.setContent(html_f642de42b04d5c5c4a3dfbbe0e6d10b2);
+            
+        
+
+        marker_3e92e5b8b88b385aa6833cb2f8d9d865.bindPopup(popup_21fb8719a6f8d6281396895d6b0efdba)
+        ;
+
+        
+    
+    
+            marker_3e92e5b8b88b385aa6833cb2f8d9d865.bindTooltip(
+                `<div>
+                     Dept 68 - 789 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3e92e5b8b88b385aa6833cb2f8d9d865.setIcon(icon_938a41d6aad206d02eb8280fe7c04418);
+            
+    
+            var marker_2099d2c20bb542a890312eb35f79122e = L.marker(
+                [48.98238547, 1.97642517],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_e24e23746ac35ce56953e5d1fbccc2ea = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fda04dcf2320e25dd1f5fe091bb7536f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_be9c00e491778b9eb2993c6c1c95be66 = $(`<div id="html_be9c00e491778b9eb2993c6c1c95be66" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 78<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 766<br>             • Classes: 26<br>             • Score: 470.00<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ✅<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_fda04dcf2320e25dd1f5fe091bb7536f.setContent(html_be9c00e491778b9eb2993c6c1c95be66);
+            
+        
+
+        marker_2099d2c20bb542a890312eb35f79122e.bindPopup(popup_fda04dcf2320e25dd1f5fe091bb7536f)
+        ;
+
+        
+    
+    
+            marker_2099d2c20bb542a890312eb35f79122e.bindTooltip(
+                `<div>
+                     Dept 78 - 766 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2099d2c20bb542a890312eb35f79122e.setIcon(icon_e24e23746ac35ce56953e5d1fbccc2ea);
+            
+    
+            var marker_b4b3d2e61e4b32c224d933ec5fb531ac = L.marker(
+                [-12.79495668, 45.21469654],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_3c96c717d52125d4afedc8044b4ef1f6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_75fd53eccf98d295ba5798803bce4e09 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5e31153d13d945e98a64ef88c54f5465 = $(`<div id="html_5e31153d13d945e98a64ef88c54f5465" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 100<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 757<br>             • Classes: 22<br>             • Score: 463.00<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_75fd53eccf98d295ba5798803bce4e09.setContent(html_5e31153d13d945e98a64ef88c54f5465);
+            
+        
+
+        marker_b4b3d2e61e4b32c224d933ec5fb531ac.bindPopup(popup_75fd53eccf98d295ba5798803bce4e09)
+        ;
+
+        
+    
+    
+            marker_b4b3d2e61e4b32c224d933ec5fb531ac.bindTooltip(
+                `<div>
+                     Dept 100 - 757 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b4b3d2e61e4b32c224d933ec5fb531ac.setIcon(icon_3c96c717d52125d4afedc8044b4ef1f6);
+            
+    
+            var marker_8547cb4d3aa22bef0a87805b16e4b52d = L.marker(
+                [48.81165495, 2.13692915],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_7fe69f65039e419aabb7c50a0f2ffb81 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e776520459ff094ff9af0b819bd36ecf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_740592e10f0d24e3326fb38d102245cc = $(`<div id="html_740592e10f0d24e3326fb38d102245cc" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 78<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 748<br>             • Classes: 27<br>             • Score: 459.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_e776520459ff094ff9af0b819bd36ecf.setContent(html_740592e10f0d24e3326fb38d102245cc);
+            
+        
+
+        marker_8547cb4d3aa22bef0a87805b16e4b52d.bindPopup(popup_e776520459ff094ff9af0b819bd36ecf)
+        ;
+
+        
+    
+    
+            marker_8547cb4d3aa22bef0a87805b16e4b52d.bindTooltip(
+                `<div>
+                     Dept 78 - 748 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8547cb4d3aa22bef0a87805b16e4b52d.setIcon(icon_7fe69f65039e419aabb7c50a0f2ffb81);
+            
+    
+            var marker_fb38c2de5a0b1a8e8bad67ffd8db615b = L.marker(
+                [43.65628897, 6.92717963],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_395cbdd56a4ac063c1b91a97783b0858 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_3bdfb49a742eae9f7e46c869a2200336 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_66ed24351fac87017c486fb7758ea864 = $(`<div id="html_66ed24351fac87017c486fb7758ea864" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 5<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 748<br>             • Classes: 26<br>             • Score: 459.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_3bdfb49a742eae9f7e46c869a2200336.setContent(html_66ed24351fac87017c486fb7758ea864);
+            
+        
+
+        marker_fb38c2de5a0b1a8e8bad67ffd8db615b.bindPopup(popup_3bdfb49a742eae9f7e46c869a2200336)
+        ;
+
+        
+    
+    
+            marker_fb38c2de5a0b1a8e8bad67ffd8db615b.bindTooltip(
+                `<div>
+                     Dept 5 - 748 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fb38c2de5a0b1a8e8bad67ffd8db615b.setIcon(icon_395cbdd56a4ac063c1b91a97783b0858);
+            
+    
+            var marker_bacc50b07c7887682258dc4b3c51748d = L.marker(
+                [50.42712463, 2.80443984],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_59a182fa332c3d9a95569dd314ca7fe3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6bd253f1b38800d028c3984a01f18f63 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5bcff383e3849e6e02ce776bf9685766 = $(`<div id="html_5bcff383e3849e6e02ce776bf9685766" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 62<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 738<br>             • Classes: 29<br>             • Score: 454.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_6bd253f1b38800d028c3984a01f18f63.setContent(html_5bcff383e3849e6e02ce776bf9685766);
+            
+        
+
+        marker_bacc50b07c7887682258dc4b3c51748d.bindPopup(popup_6bd253f1b38800d028c3984a01f18f63)
+        ;
+
+        
+    
+    
+            marker_bacc50b07c7887682258dc4b3c51748d.bindTooltip(
+                `<div>
+                     Dept 62 - 738 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bacc50b07c7887682258dc4b3c51748d.setIcon(icon_59a182fa332c3d9a95569dd314ca7fe3);
+            
+    
+            var marker_05fd28c0002673ff0a2a4d0e426f7771 = L.marker(
+                [-12.73716343, 45.16362936],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_6d1313df7eb14ff7e593efe42cc3bd78 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4777a4ea1954011d2660ae99db869eb9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f9a09046c95ff4656066153d84e756f9 = $(`<div id="html_f9a09046c95ff4656066153d84e756f9" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 100<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 736<br>             • Classes: 29<br>             • Score: 453.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_4777a4ea1954011d2660ae99db869eb9.setContent(html_f9a09046c95ff4656066153d84e756f9);
+            
+        
+
+        marker_05fd28c0002673ff0a2a4d0e426f7771.bindPopup(popup_4777a4ea1954011d2660ae99db869eb9)
+        ;
+
+        
+    
+    
+            marker_05fd28c0002673ff0a2a4d0e426f7771.bindTooltip(
+                `<div>
+                     Dept 100 - 736 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_05fd28c0002673ff0a2a4d0e426f7771.setIcon(icon_6d1313df7eb14ff7e593efe42cc3bd78);
+            
+    
+            var marker_882c7a33f52a7fa661e17ca1dc396630 = L.marker(
+                [48.8620012, 2.27597599],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_25ec99cb79e0853c00a575771b53ea09 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ddac5de762ac59ede647e09e5977592a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3058cadd26c5f8d94021df85a87a4a4e = $(`<div id="html_3058cadd26c5f8d94021df85a87a4a4e" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 75<br>             <b>Type:</b> 0<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 731<br>             • Classes: 25<br>             • Score: 448.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_ddac5de762ac59ede647e09e5977592a.setContent(html_3058cadd26c5f8d94021df85a87a4a4e);
+            
+        
+
+        marker_882c7a33f52a7fa661e17ca1dc396630.bindPopup(popup_ddac5de762ac59ede647e09e5977592a)
+        ;
+
+        
+    
+    
+            marker_882c7a33f52a7fa661e17ca1dc396630.bindTooltip(
+                `<div>
+                     Dept 75 - 731 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_882c7a33f52a7fa661e17ca1dc396630.setIcon(icon_25ec99cb79e0853c00a575771b53ea09);
+            
+    
+            var marker_cba15720eeba17f3fc7ba473e0c28f0f = L.marker(
+                [-20.88220774, 55.44972775],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_6ff1f569bf9181b0b296d708af737f4a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fd81d74d2da6b10327db7923f77f645d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2e87795502dd48914e3222e93a13f4f4 = $(`<div id="html_2e87795502dd48914e3222e93a13f4f4" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 99<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 726<br>             • Classes: 26<br>             • Score: 446.00<br>             <hr>             <b>Services:</b><br>             • Restauration: ❌<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_fd81d74d2da6b10327db7923f77f645d.setContent(html_2e87795502dd48914e3222e93a13f4f4);
+            
+        
+
+        marker_cba15720eeba17f3fc7ba473e0c28f0f.bindPopup(popup_fd81d74d2da6b10327db7923f77f645d)
+        ;
+
+        
+    
+    
+            marker_cba15720eeba17f3fc7ba473e0c28f0f.bindTooltip(
+                `<div>
+                     Dept 99 - 726 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_cba15720eeba17f3fc7ba473e0c28f0f.setIcon(icon_6ff1f569bf9181b0b296d708af737f4a);
+            
+    
+            var marker_462ec3c483b0af020c7bd95a20e5889c = L.marker(
+                [48.79425645, 2.44493894],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_fe77b027205f4d2e138d3450e65f4f9e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a7fcf4950922bcf620fdc32afc402573 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f268e9477c3a8f98471211f1a9aef500 = $(`<div id="html_f268e9477c3a8f98471211f1a9aef500" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 94<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 710<br>             • Classes: 28<br>             • Score: 437.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_a7fcf4950922bcf620fdc32afc402573.setContent(html_f268e9477c3a8f98471211f1a9aef500);
+            
+        
+
+        marker_462ec3c483b0af020c7bd95a20e5889c.bindPopup(popup_a7fcf4950922bcf620fdc32afc402573)
+        ;
+
+        
+    
+    
+            marker_462ec3c483b0af020c7bd95a20e5889c.bindTooltip(
+                `<div>
+                     Dept 94 - 710 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_462ec3c483b0af020c7bd95a20e5889c.setIcon(icon_fe77b027205f4d2e138d3450e65f4f9e);
+            
+    
+            var marker_dd81f699fe52a627e1b6e631db2ea5f0 = L.marker(
+                [49.09809707, 6.15902064],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_b5d19800e0a67083363f8ea8a9fe34b1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0ea933c48b164683cc24bf9f4e02c161 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8e485dcf69e8838c27a3eff48dd2bfad = $(`<div id="html_8e485dcf69e8838c27a3eff48dd2bfad" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 57<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 710<br>             • Classes: 26<br>             • Score: 436.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_0ea933c48b164683cc24bf9f4e02c161.setContent(html_8e485dcf69e8838c27a3eff48dd2bfad);
+            
+        
+
+        marker_dd81f699fe52a627e1b6e631db2ea5f0.bindPopup(popup_0ea933c48b164683cc24bf9f4e02c161)
+        ;
+
+        
+    
+    
+            marker_dd81f699fe52a627e1b6e631db2ea5f0.bindTooltip(
+                `<div>
+                     Dept 57 - 710 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dd81f699fe52a627e1b6e631db2ea5f0.setIcon(icon_b5d19800e0a67083363f8ea8a9fe34b1);
+            
+    
+            var marker_8984a30fed6b343c93288ead0bc11a32 = L.marker(
+                [48.88618977, 2.29891283],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_c02287feee7797a457e9924d167ce0ba = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6a5e88f20e9175969d18bdff2c7d8861 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a5edd3e77d0bc0199702f4059e256c9a = $(`<div id="html_a5edd3e77d0bc0199702f4059e256c9a" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 75<br>             <b>Type:</b> 0<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 707<br>             • Classes: 25<br>             • Score: 434.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_6a5e88f20e9175969d18bdff2c7d8861.setContent(html_a5edd3e77d0bc0199702f4059e256c9a);
+            
+        
+
+        marker_8984a30fed6b343c93288ead0bc11a32.bindPopup(popup_6a5e88f20e9175969d18bdff2c7d8861)
+        ;
+
+        
+    
+    
+            marker_8984a30fed6b343c93288ead0bc11a32.bindTooltip(
+                `<div>
+                     Dept 75 - 707 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8984a30fed6b343c93288ead0bc11a32.setIcon(icon_c02287feee7797a457e9924d167ce0ba);
+            
+    
+            var marker_aef0cc50c7f6513ac3dbbc474011555e = L.marker(
+                [48.0734281, 7.36134358],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_1c4692bbac186495e149522a2ad071fb = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_971085f8e6f990ce65caa8e2b074f478 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5a2f1ec6de5fd367680d0d8588cc9c08 = $(`<div id="html_5a2f1ec6de5fd367680d0d8588cc9c08" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 68<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 696<br>             • Classes: 27<br>             • Score: 428.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_971085f8e6f990ce65caa8e2b074f478.setContent(html_5a2f1ec6de5fd367680d0d8588cc9c08);
+            
+        
+
+        marker_aef0cc50c7f6513ac3dbbc474011555e.bindPopup(popup_971085f8e6f990ce65caa8e2b074f478)
+        ;
+
+        
+    
+    
+            marker_aef0cc50c7f6513ac3dbbc474011555e.bindTooltip(
+                `<div>
+                     Dept 68 - 696 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_aef0cc50c7f6513ac3dbbc474011555e.setIcon(icon_1c4692bbac186495e149522a2ad071fb);
+            
+    
+            var marker_70ee268bb6866726a7aa252c3e462129 = L.marker(
+                [48.924926, 2.25263415],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_5678a909f892818975d8ee68414658c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0b4d4fdfcedcd9ea9d9e2fc9a01c112a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0ab97f882125368fb3d011cc0301a206 = $(`<div id="html_0ab97f882125368fb3d011cc0301a206" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 696<br>             • Classes: 24<br>             • Score: 427.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_0b4d4fdfcedcd9ea9d9e2fc9a01c112a.setContent(html_0ab97f882125368fb3d011cc0301a206);
+            
+        
+
+        marker_70ee268bb6866726a7aa252c3e462129.bindPopup(popup_0b4d4fdfcedcd9ea9d9e2fc9a01c112a)
+        ;
+
+        
+    
+    
+            marker_70ee268bb6866726a7aa252c3e462129.bindTooltip(
+                `<div>
+                     Dept 92 - 696 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_70ee268bb6866726a7aa252c3e462129.setIcon(icon_5678a909f892818975d8ee68414658c3);
+            
+    
+            var marker_053f6c9507c54a12f831fe985486e160 = L.marker(
+                [43.60104444, 1.46105013],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_e167a7706f6392874057a96c7ff45c8d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7fdb6631ff27b7d489dd0caa72bc152c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_9d3d1bd95db4cbcc3e11227c02c2d338 = $(`<div id="html_9d3d1bd95db4cbcc3e11227c02c2d338" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 31<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 691<br>             • Classes: 25<br>             • Score: 424.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ✅<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_7fdb6631ff27b7d489dd0caa72bc152c.setContent(html_9d3d1bd95db4cbcc3e11227c02c2d338);
+            
+        
+
+        marker_053f6c9507c54a12f831fe985486e160.bindPopup(popup_7fdb6631ff27b7d489dd0caa72bc152c)
+        ;
+
+        
+    
+    
+            marker_053f6c9507c54a12f831fe985486e160.bindTooltip(
+                `<div>
+                     Dept 31 - 691 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_053f6c9507c54a12f831fe985486e160.setIcon(icon_e167a7706f6392874057a96c7ff45c8d);
+            
+    
+            var marker_1e95499d559779c053acaeb9866fa143 = L.marker(
+                [-21.28379629, 55.40274616],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_a1b91988090a08ea51bf37e07554616e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_7a3d30c3ad5bb325131c8e707a12a239 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b82edefdc9e0a858abf7753128c31feb = $(`<div id="html_b82edefdc9e0a858abf7753128c31feb" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 99<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 686<br>             • Classes: 25<br>             • Score: 421.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_7a3d30c3ad5bb325131c8e707a12a239.setContent(html_b82edefdc9e0a858abf7753128c31feb);
+            
+        
+
+        marker_1e95499d559779c053acaeb9866fa143.bindPopup(popup_7a3d30c3ad5bb325131c8e707a12a239)
+        ;
+
+        
+    
+    
+            marker_1e95499d559779c053acaeb9866fa143.bindTooltip(
+                `<div>
+                     Dept 99 - 686 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_1e95499d559779c053acaeb9866fa143.setIcon(icon_a1b91988090a08ea51bf37e07554616e);
+            
+    
+            var marker_9e49b181df811786e6187dd2860b2bcd = L.marker(
+                [48.75360667, 2.30226299],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_9cd6fe6219e841ffedb721d26728814f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8c60699d65eda175ae17807a93395c7d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_62a013d3cccbde89a0df0c409a1570d2 = $(`<div id="html_62a013d3cccbde89a0df0c409a1570d2" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 686<br>             • Classes: 24<br>             • Score: 421.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_8c60699d65eda175ae17807a93395c7d.setContent(html_62a013d3cccbde89a0df0c409a1570d2);
+            
+        
+
+        marker_9e49b181df811786e6187dd2860b2bcd.bindPopup(popup_8c60699d65eda175ae17807a93395c7d)
+        ;
+
+        
+    
+    
+            marker_9e49b181df811786e6187dd2860b2bcd.bindTooltip(
+                `<div>
+                     Dept 92 - 686 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9e49b181df811786e6187dd2860b2bcd.setIcon(icon_9cd6fe6219e841ffedb721d26728814f);
+            
+    
+            var marker_a2fd01a769f6842c7de30e14412cf789 = L.marker(
+                [14.60722813, -61.07504897],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_9daf98c2dee1f5d4446b75a124609004 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_b702ad951236ab1c23a91e5e26e6a2eb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_68c2a8ad5c49518a3a5d449fe5ab1b19 = $(`<div id="html_68c2a8ad5c49518a3a5d449fe5ab1b19" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 97<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 681<br>             • Classes: 24<br>             • Score: 418.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_b702ad951236ab1c23a91e5e26e6a2eb.setContent(html_68c2a8ad5c49518a3a5d449fe5ab1b19);
+            
+        
+
+        marker_a2fd01a769f6842c7de30e14412cf789.bindPopup(popup_b702ad951236ab1c23a91e5e26e6a2eb)
+        ;
+
+        
+    
+    
+            marker_a2fd01a769f6842c7de30e14412cf789.bindTooltip(
+                `<div>
+                     Dept 97 - 681 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_a2fd01a769f6842c7de30e14412cf789.setIcon(icon_9daf98c2dee1f5d4446b75a124609004);
+            
+    
+            var marker_ff211753e9ef910a0191991f6597fa16 = L.marker(
+                [48.84289076, 2.22934801],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_be25cabeef635e3d0ed76264d6562146 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_347d9d1290201aae5f71eed8364ad72d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0059ee09daebff71df46c9602ed602ca = $(`<div id="html_0059ee09daebff71df46c9602ed602ca" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 673<br>             • Classes: 24<br>             • Score: 413.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_347d9d1290201aae5f71eed8364ad72d.setContent(html_0059ee09daebff71df46c9602ed602ca);
+            
+        
+
+        marker_ff211753e9ef910a0191991f6597fa16.bindPopup(popup_347d9d1290201aae5f71eed8364ad72d)
+        ;
+
+        
+    
+    
+            marker_ff211753e9ef910a0191991f6597fa16.bindTooltip(
+                `<div>
+                     Dept 92 - 673 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_ff211753e9ef910a0191991f6597fa16.setIcon(icon_be25cabeef635e3d0ed76264d6562146);
+            
+    
+            var marker_b46f01fd8c85ffef2210616708cf090f = L.marker(
+                [45.76834, 4.86878277],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_a8d99e0e670e994cff2f4826b767508e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a0b20fbecb162d4415a92173aea25a8e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8f4829db3bb72e49209278255bf91c60 = $(`<div id="html_8f4829db3bb72e49209278255bf91c60" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 69<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 668<br>             • Classes: 26<br>             • Score: 411.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_a0b20fbecb162d4415a92173aea25a8e.setContent(html_8f4829db3bb72e49209278255bf91c60);
+            
+        
+
+        marker_b46f01fd8c85ffef2210616708cf090f.bindPopup(popup_a0b20fbecb162d4415a92173aea25a8e)
+        ;
+
+        
+    
+    
+            marker_b46f01fd8c85ffef2210616708cf090f.bindTooltip(
+                `<div>
+                     Dept 69 - 668 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b46f01fd8c85ffef2210616708cf090f.setIcon(icon_a8d99e0e670e994cff2f4826b767508e);
+            
+    
+            var marker_3b444e4fc364b557844abe1ddb8de137 = L.marker(
+                [-20.8895016, 55.48035365],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_62cee62dfe9cb5aa57060a187b083895 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2874e1c26566ba059a09120180c19ceb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f712363f6a65d5295fbff6106620d20f = $(`<div id="html_f712363f6a65d5295fbff6106620d20f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 99<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 667<br>             • Classes: 24<br>             • Score: 409.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_2874e1c26566ba059a09120180c19ceb.setContent(html_f712363f6a65d5295fbff6106620d20f);
+            
+        
+
+        marker_3b444e4fc364b557844abe1ddb8de137.bindPopup(popup_2874e1c26566ba059a09120180c19ceb)
+        ;
+
+        
+    
+    
+            marker_3b444e4fc364b557844abe1ddb8de137.bindTooltip(
+                `<div>
+                     Dept 99 - 667 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3b444e4fc364b557844abe1ddb8de137.setIcon(icon_62cee62dfe9cb5aa57060a187b083895);
+            
+    
+            var marker_7dbcc7b7af3b7564fb8c16bce6f876f7 = L.marker(
+                [48.88647806, 2.26568864],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_f14b7006349b04d140bdb47c5a9bd45f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fddf75f9ef0ca318bf803b1781d843a5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a784f2f28968cb720e003c14f40d3851 = $(`<div id="html_a784f2f28968cb720e003c14f40d3851" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 668<br>             • Classes: 22<br>             • Score: 409.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_fddf75f9ef0ca318bf803b1781d843a5.setContent(html_a784f2f28968cb720e003c14f40d3851);
+            
+        
+
+        marker_7dbcc7b7af3b7564fb8c16bce6f876f7.bindPopup(popup_fddf75f9ef0ca318bf803b1781d843a5)
+        ;
+
+        
+    
+    
+            marker_7dbcc7b7af3b7564fb8c16bce6f876f7.bindTooltip(
+                `<div>
+                     Dept 92 - 668 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_7dbcc7b7af3b7564fb8c16bce6f876f7.setIcon(icon_f14b7006349b04d140bdb47c5a9bd45f);
+            
+    
+            var marker_56082e215b5362f310f1aed22a3fa7d1 = L.marker(
+                [50.67775478, 3.16687008],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_8aaf1a6f41fc3e84355d790fe3b871dc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f6214750d856085e3ee25ebbab557bd9 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fba463f901953b9c29acaae4f870e065 = $(`<div id="html_fba463f901953b9c29acaae4f870e065" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 59<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 663<br>             • Classes: 24<br>             • Score: 407.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_f6214750d856085e3ee25ebbab557bd9.setContent(html_fba463f901953b9c29acaae4f870e065);
+            
+        
+
+        marker_56082e215b5362f310f1aed22a3fa7d1.bindPopup(popup_f6214750d856085e3ee25ebbab557bd9)
+        ;
+
+        
+    
+    
+            marker_56082e215b5362f310f1aed22a3fa7d1.bindTooltip(
+                `<div>
+                     Dept 59 - 663 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_56082e215b5362f310f1aed22a3fa7d1.setIcon(icon_8aaf1a6f41fc3e84355d790fe3b871dc);
+            
+    
+            var marker_fb4a2282309ef81a26bb1d56f7b62077 = L.marker(
+                [48.88849033, 2.27789063],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_cd0da845371ce530bb218d1010d42b00 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_92ee00e3c6ac592997beb488f1537a71 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_95ab891f7225575bbc70b525be4c411f = $(`<div id="html_95ab891f7225575bbc70b525be4c411f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 663<br>             • Classes: 21<br>             • Score: 406.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_92ee00e3c6ac592997beb488f1537a71.setContent(html_95ab891f7225575bbc70b525be4c411f);
+            
+        
+
+        marker_fb4a2282309ef81a26bb1d56f7b62077.bindPopup(popup_92ee00e3c6ac592997beb488f1537a71)
+        ;
+
+        
+    
+    
+            marker_fb4a2282309ef81a26bb1d56f7b62077.bindTooltip(
+                `<div>
+                     Dept 92 - 663 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fb4a2282309ef81a26bb1d56f7b62077.setIcon(icon_cd0da845371ce530bb218d1010d42b00);
+            
+    
+            var marker_50bcc84e254fb4ed7e6bc6fe85c2860d = L.marker(
+                [-20.96481837, 55.64961025],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_a9010103f0d0b28491cc0442afe209c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_39ac76a98a974f48528ae20c7f5c524b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2d9509789790c71bebeb5c909e28abb1 = $(`<div id="html_2d9509789790c71bebeb5c909e28abb1" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 99<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 660<br>             • Classes: 24<br>             • Score: 405.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_39ac76a98a974f48528ae20c7f5c524b.setContent(html_2d9509789790c71bebeb5c909e28abb1);
+            
+        
+
+        marker_50bcc84e254fb4ed7e6bc6fe85c2860d.bindPopup(popup_39ac76a98a974f48528ae20c7f5c524b)
+        ;
+
+        
+    
+    
+            marker_50bcc84e254fb4ed7e6bc6fe85c2860d.bindTooltip(
+                `<div>
+                     Dept 99 - 660 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_50bcc84e254fb4ed7e6bc6fe85c2860d.setIcon(icon_a9010103f0d0b28491cc0442afe209c3);
+            
+    
+            var marker_3e3ec826aa9345016694bd2f729333d3 = L.marker(
+                [49.8476907, 3.29293987],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_c5f6587649b12997d4146550a7e28db8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e71cd628cc3366d7fc29bf38f19ed6f3 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_cae7de6d30e39a3285c7cfe66cf91f7e = $(`<div id="html_cae7de6d30e39a3285c7cfe66cf91f7e" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 1<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 653<br>             • Classes: 27<br>             • Score: 402.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_e71cd628cc3366d7fc29bf38f19ed6f3.setContent(html_cae7de6d30e39a3285c7cfe66cf91f7e);
+            
+        
+
+        marker_3e3ec826aa9345016694bd2f729333d3.bindPopup(popup_e71cd628cc3366d7fc29bf38f19ed6f3)
+        ;
+
+        
+    
+    
+            marker_3e3ec826aa9345016694bd2f729333d3.bindTooltip(
+                `<div>
+                     Dept 1 - 653 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3e3ec826aa9345016694bd2f729333d3.setIcon(icon_c5f6587649b12997d4146550a7e28db8);
+            
+    
+            var marker_02df46b43016eb019cabd63271acbe6b = L.marker(
+                [45.78406808, 3.08160973],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_4e7d7ee1b7cb803c0a8ea033f73d98c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c36da1ad167d898e506dfa3da410cf7f = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_52c0e63d2d7cde724d0d13c4cd6ea32c = $(`<div id="html_52c0e63d2d7cde724d0d13c4cd6ea32c" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 63<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 654<br>             • Classes: 25<br>             • Score: 402.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_c36da1ad167d898e506dfa3da410cf7f.setContent(html_52c0e63d2d7cde724d0d13c4cd6ea32c);
+            
+        
+
+        marker_02df46b43016eb019cabd63271acbe6b.bindPopup(popup_c36da1ad167d898e506dfa3da410cf7f)
+        ;
+
+        
+    
+    
+            marker_02df46b43016eb019cabd63271acbe6b.bindTooltip(
+                `<div>
+                     Dept 63 - 654 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_02df46b43016eb019cabd63271acbe6b.setIcon(icon_4e7d7ee1b7cb803c0a8ea033f73d98c3);
+            
+    
+            var marker_76c902b614f4120cb0cacd1995a17e3b = L.marker(
+                [50.71794275, 3.10694998],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_1b53f4e68b6f9517367764983170f343 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c24c0fe9b728d2f5342004710228a3ca = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d5440c46dea1f0df514e6d0a3e6e5469 = $(`<div id="html_d5440c46dea1f0df514e6d0a3e6e5469" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 59<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 650<br>             • Classes: 23<br>             • Score: 399.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_c24c0fe9b728d2f5342004710228a3ca.setContent(html_d5440c46dea1f0df514e6d0a3e6e5469);
+            
+        
+
+        marker_76c902b614f4120cb0cacd1995a17e3b.bindPopup(popup_c24c0fe9b728d2f5342004710228a3ca)
+        ;
+
+        
+    
+    
+            marker_76c902b614f4120cb0cacd1995a17e3b.bindTooltip(
+                `<div>
+                     Dept 59 - 650 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_76c902b614f4120cb0cacd1995a17e3b.setIcon(icon_1b53f4e68b6f9517367764983170f343);
+            
+    
+            var marker_44a0c7521c07de07b0b10fc59e36deeb = L.marker(
+                [-21.01446404, 55.27011883],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_a430bbd359582efae00694c53084914a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_282cf0e53a48d5d34eee146ba1fa0303 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5b258d72d37ab0f7c13566cf68ad40fa = $(`<div id="html_5b258d72d37ab0f7c13566cf68ad40fa" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 99<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 642<br>             • Classes: 24<br>             • Score: 394.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_282cf0e53a48d5d34eee146ba1fa0303.setContent(html_5b258d72d37ab0f7c13566cf68ad40fa);
+            
+        
+
+        marker_44a0c7521c07de07b0b10fc59e36deeb.bindPopup(popup_282cf0e53a48d5d34eee146ba1fa0303)
+        ;
+
+        
+    
+    
+            marker_44a0c7521c07de07b0b10fc59e36deeb.bindTooltip(
+                `<div>
+                     Dept 99 - 642 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_44a0c7521c07de07b0b10fc59e36deeb.setIcon(icon_a430bbd359582efae00694c53084914a);
+            
+    
+            var marker_216a05c82168c03a8331c9f52555fd20 = L.marker(
+                [48.84668263, 2.23778967],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_06262ac2baa2102a5abf59d874b03dd3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_6c0f3f88c12ac6b8a4cfc070067ff8b1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_4d355619c354068fd36dc51e6571c1d2 = $(`<div id="html_4d355619c354068fd36dc51e6571c1d2" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 637<br>             • Classes: 21<br>             • Score: 390.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_6c0f3f88c12ac6b8a4cfc070067ff8b1.setContent(html_4d355619c354068fd36dc51e6571c1d2);
+            
+        
+
+        marker_216a05c82168c03a8331c9f52555fd20.bindPopup(popup_6c0f3f88c12ac6b8a4cfc070067ff8b1)
+        ;
+
+        
+    
+    
+            marker_216a05c82168c03a8331c9f52555fd20.bindTooltip(
+                `<div>
+                     Dept 92 - 637 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_216a05c82168c03a8331c9f52555fd20.setIcon(icon_06262ac2baa2102a5abf59d874b03dd3);
+            
+    
+            var marker_e5e00b3b1ac3124151589668f7af3664 = L.marker(
+                [45.76365448, 4.82620953],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_e49576c4a363e1e9648d7814f07b80ab = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2ef34e4246067a16cfd740ebf6854f57 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b9a77f4b29d9253009704c0573f16a7f = $(`<div id="html_b9a77f4b29d9253009704c0573f16a7f" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 69<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 634<br>             • Classes: 24<br>             • Score: 390.00<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_2ef34e4246067a16cfd740ebf6854f57.setContent(html_b9a77f4b29d9253009704c0573f16a7f);
+            
+        
+
+        marker_e5e00b3b1ac3124151589668f7af3664.bindPopup(popup_2ef34e4246067a16cfd740ebf6854f57)
+        ;
+
+        
+    
+    
+            marker_e5e00b3b1ac3124151589668f7af3664.bindTooltip(
+                `<div>
+                     Dept 69 - 634 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_e5e00b3b1ac3124151589668f7af3664.setIcon(icon_e49576c4a363e1e9648d7814f07b80ab);
+            
+    
+            var marker_dd16832bef0c235b0a82d73faa4cb2fe = L.marker(
+                [44.05396472, 5.04904278],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_e8606e6d5a73577e8e9681e8b4e349ee = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_64dc81e7a0b16c9c05a2a1b08f374267 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dc16861eba92e7b123e02a96d2ea06e3 = $(`<div id="html_dc16861eba92e7b123e02a96d2ea06e3" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 84<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 633<br>             • Classes: 23<br>             • Score: 389.00<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ✅<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_64dc81e7a0b16c9c05a2a1b08f374267.setContent(html_dc16861eba92e7b123e02a96d2ea06e3);
+            
+        
+
+        marker_dd16832bef0c235b0a82d73faa4cb2fe.bindPopup(popup_64dc81e7a0b16c9c05a2a1b08f374267)
+        ;
+
+        
+    
+    
+            marker_dd16832bef0c235b0a82d73faa4cb2fe.bindTooltip(
+                `<div>
+                     Dept 84 - 633 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dd16832bef0c235b0a82d73faa4cb2fe.setIcon(icon_e8606e6d5a73577e8e9681e8b4e349ee);
+            
+    
+            var marker_6dac930014580cd74641fc7451fd27e4 = L.marker(
+                [42.71824526, 2.87911439],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_7e86f543c28356e92407aa59805ddd54 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_64363543ce6c87bc88caaeb644c25adc = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5da5fc92b47f200a2795478f6854a824 = $(`<div id="html_5da5fc92b47f200a2795478f6854a824" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 66<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 632<br>             • Classes: 21<br>             • Score: 387.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_64363543ce6c87bc88caaeb644c25adc.setContent(html_5da5fc92b47f200a2795478f6854a824);
+            
+        
+
+        marker_6dac930014580cd74641fc7451fd27e4.bindPopup(popup_64363543ce6c87bc88caaeb644c25adc)
+        ;
+
+        
+    
+    
+            marker_6dac930014580cd74641fc7451fd27e4.bindTooltip(
+                `<div>
+                     Dept 66 - 632 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6dac930014580cd74641fc7451fd27e4.setIcon(icon_7e86f543c28356e92407aa59805ddd54);
+            
+    
+            var marker_50b9f530663af9ee8d37bc70e8e6c9e8 = L.marker(
+                [-12.78462243, 45.22034405],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_f3d3b315794a9010a9fce197be3ac77c = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5d15013cfefc236078ac7f11b8358316 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fdc25cf78cb35eebd5c2a40bc48d95d6 = $(`<div id="html_fdc25cf78cb35eebd5c2a40bc48d95d6" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 100<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 620<br>             • Classes: 36<br>             • Score: 386.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_5d15013cfefc236078ac7f11b8358316.setContent(html_fdc25cf78cb35eebd5c2a40bc48d95d6);
+            
+        
+
+        marker_50b9f530663af9ee8d37bc70e8e6c9e8.bindPopup(popup_5d15013cfefc236078ac7f11b8358316)
+        ;
+
+        
+    
+    
+            marker_50b9f530663af9ee8d37bc70e8e6c9e8.bindTooltip(
+                `<div>
+                     Dept 100 - 620 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_50b9f530663af9ee8d37bc70e8e6c9e8.setIcon(icon_f3d3b315794a9010a9fce197be3ac77c);
+            
+    
+            var marker_6b55abdf5b1d98e674712f649443b8f6 = L.marker(
+                [48.90698444, 2.285454],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_d24d6721a1beac59ba9eac539b732b1e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_72463149dcdc40aa4bad179061dd2fba = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_3eaa16955b95c1a9df8b8a335ef67f62 = $(`<div id="html_3eaa16955b95c1a9df8b8a335ef67f62" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 92<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 627<br>             • Classes: 23<br>             • Score: 385.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_72463149dcdc40aa4bad179061dd2fba.setContent(html_3eaa16955b95c1a9df8b8a335ef67f62);
+            
+        
+
+        marker_6b55abdf5b1d98e674712f649443b8f6.bindPopup(popup_72463149dcdc40aa4bad179061dd2fba)
+        ;
+
+        
+    
+    
+            marker_6b55abdf5b1d98e674712f649443b8f6.bindTooltip(
+                `<div>
+                     Dept 92 - 627 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6b55abdf5b1d98e674712f649443b8f6.setIcon(icon_d24d6721a1beac59ba9eac539b732b1e);
+            
+    
+            var marker_46662940367a658c114bfd9516af731a = L.marker(
+                [50.63751071, 3.02707038],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_6c259e0ade2c4003076db2fa39d6c107 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8683b7a5c14ba4d404fc1255654669b7 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_b2aaa4bc21d5121a1993e76cce1d24e2 = $(`<div id="html_b2aaa4bc21d5121a1993e76cce1d24e2" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 59<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 626<br>             • Classes: 23<br>             • Score: 384.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_8683b7a5c14ba4d404fc1255654669b7.setContent(html_b2aaa4bc21d5121a1993e76cce1d24e2);
+            
+        
+
+        marker_46662940367a658c114bfd9516af731a.bindPopup(popup_8683b7a5c14ba4d404fc1255654669b7)
+        ;
+
+        
+    
+    
+            marker_46662940367a658c114bfd9516af731a.bindTooltip(
+                `<div>
+                     Dept 59 - 626 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_46662940367a658c114bfd9516af731a.setIcon(icon_6c259e0ade2c4003076db2fa39d6c107);
+            
+    
+            var marker_bb134cc3480ac51534b684c2fbfa31f3 = L.marker(
+                [50.66068539, 3.10475965],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_9bf812821bcd203d76920b7452e5d2fa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4943eecd9d85ba153976db6659468acd = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_2ba932ad92a76b4ea66cc4a3d4cec31b = $(`<div id="html_2ba932ad92a76b4ea66cc4a3d4cec31b" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 59<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 626<br>             • Classes: 22<br>             • Score: 384.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_4943eecd9d85ba153976db6659468acd.setContent(html_2ba932ad92a76b4ea66cc4a3d4cec31b);
+            
+        
+
+        marker_bb134cc3480ac51534b684c2fbfa31f3.bindPopup(popup_4943eecd9d85ba153976db6659468acd)
+        ;
+
+        
+    
+    
+            marker_bb134cc3480ac51534b684c2fbfa31f3.bindTooltip(
+                `<div>
+                     Dept 59 - 626 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bb134cc3480ac51534b684c2fbfa31f3.setIcon(icon_9bf812821bcd203d76920b7452e5d2fa);
+            
+    
+            var marker_da697fcbec32e7f81953a9a703aff868 = L.marker(
+                [48.06689899, 7.35222787],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_1556e8eaecbe4d9c368d539fc53b0c8a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_df61cded836bb957380498e2d229bfd1 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c8cb7f6201efc41a8914d8b4e9bbba7d = $(`<div id="html_c8cb7f6201efc41a8914d8b4e9bbba7d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 68<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 626<br>             • Classes: 22<br>             • Score: 384.40<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_df61cded836bb957380498e2d229bfd1.setContent(html_c8cb7f6201efc41a8914d8b4e9bbba7d);
+            
+        
+
+        marker_da697fcbec32e7f81953a9a703aff868.bindPopup(popup_df61cded836bb957380498e2d229bfd1)
+        ;
+
+        
+    
+    
+            marker_da697fcbec32e7f81953a9a703aff868.bindTooltip(
+                `<div>
+                     Dept 68 - 626 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_da697fcbec32e7f81953a9a703aff868.setIcon(icon_1556e8eaecbe4d9c368d539fc53b0c8a);
+            
+    
+            var marker_387e25063e60b0d3254763465c917367 = L.marker(
+                [43.57684371, 7.09374053],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_a1a1e325cfda96ebc4b393a0263ed362 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_822938acf80d7c4db39aaec2ddf0c149 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1a1ae3a97bb1ab06ae053cbe610151ec = $(`<div id="html_1a1ae3a97bb1ab06ae053cbe610151ec" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 5<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 624<br>             • Classes: 21<br>             • Score: 382.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_822938acf80d7c4db39aaec2ddf0c149.setContent(html_1a1ae3a97bb1ab06ae053cbe610151ec);
+            
+        
+
+        marker_387e25063e60b0d3254763465c917367.bindPopup(popup_822938acf80d7c4db39aaec2ddf0c149)
+        ;
+
+        
+    
+    
+            marker_387e25063e60b0d3254763465c917367.bindTooltip(
+                `<div>
+                     Dept 5 - 624 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_387e25063e60b0d3254763465c917367.setIcon(icon_a1a1e325cfda96ebc4b393a0263ed362);
+            
+    
+            var marker_d2c79cefb376ab119e16cf5db9305d32 = L.marker(
+                [49.37990112, 3.32062003],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_f3d0be56d23934def57d8353ec74c331 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c7294ce10fda975aea9d87aa036ba42b = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7a508ee55f96bc12938d01deeae8d65c = $(`<div id="html_7a508ee55f96bc12938d01deeae8d65c" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 1<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 618<br>             • Classes: 25<br>             • Score: 380.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_c7294ce10fda975aea9d87aa036ba42b.setContent(html_7a508ee55f96bc12938d01deeae8d65c);
+            
+        
+
+        marker_d2c79cefb376ab119e16cf5db9305d32.bindPopup(popup_c7294ce10fda975aea9d87aa036ba42b)
+        ;
+
+        
+    
+    
+            marker_d2c79cefb376ab119e16cf5db9305d32.bindTooltip(
+                `<div>
+                     Dept 1 - 618 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_d2c79cefb376ab119e16cf5db9305d32.setIcon(icon_f3d0be56d23934def57d8353ec74c331);
+            
+    
+            var marker_3c24d3fae45e9ac55b1d794d3c6712c7 = L.marker(
+                [49.18742217, -0.37270002],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_0ae83cbb37b49b7eeedbaec4797b664a = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5c8691df683ead6d3ce51156d6d99bf8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_7d8ebe63e7fc4ca499816d8feb3dc39d = $(`<div id="html_7d8ebe63e7fc4ca499816d8feb3dc39d" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 13<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 616<br>             • Classes: 24<br>             • Score: 379.20<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ✅<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_5c8691df683ead6d3ce51156d6d99bf8.setContent(html_7d8ebe63e7fc4ca499816d8feb3dc39d);
+            
+        
+
+        marker_3c24d3fae45e9ac55b1d794d3c6712c7.bindPopup(popup_5c8691df683ead6d3ce51156d6d99bf8)
+        ;
+
+        
+    
+    
+            marker_3c24d3fae45e9ac55b1d794d3c6712c7.bindTooltip(
+                `<div>
+                     Dept 13 - 616 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3c24d3fae45e9ac55b1d794d3c6712c7.setIcon(icon_0ae83cbb37b49b7eeedbaec4797b664a);
+            
+    
+            var marker_17bc70a2ff8a882d6d7f6ecb9d45561b = L.marker(
+                [49.35687681, 6.15889937],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_a10444cf269103654a608994a2952048 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ed6e74f3f6ba3820a004b4a71e40469a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_13186a14debc0ece12ab571b76d5f42c = $(`<div id="html_13186a14debc0ece12ab571b76d5f42c" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 57<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 616<br>             • Classes: 23<br>             • Score: 378.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_ed6e74f3f6ba3820a004b4a71e40469a.setContent(html_13186a14debc0ece12ab571b76d5f42c);
+            
+        
+
+        marker_17bc70a2ff8a882d6d7f6ecb9d45561b.bindPopup(popup_ed6e74f3f6ba3820a004b4a71e40469a)
+        ;
+
+        
+    
+    
+            marker_17bc70a2ff8a882d6d7f6ecb9d45561b.bindTooltip(
+                `<div>
+                     Dept 57 - 616 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_17bc70a2ff8a882d6d7f6ecb9d45561b.setIcon(icon_a10444cf269103654a608994a2952048);
+            
+    
+            var marker_63ed0dd12d54df230515623229778ad5 = L.marker(
+                [45.69588967, 4.79591876],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_7a4b8621cd554ce42a7b2a49e2254ec2 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2263c6e4859971ead5b4a942e2278b28 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0e1dadfb33dcbf6b9ce1cf10f64313de = $(`<div id="html_0e1dadfb33dcbf6b9ce1cf10f64313de" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 69<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 616<br>             • Classes: 23<br>             • Score: 378.80<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ❌<br>         </div>         </div>`)[0];
+                popup_2263c6e4859971ead5b4a942e2278b28.setContent(html_0e1dadfb33dcbf6b9ce1cf10f64313de);
+            
+        
+
+        marker_63ed0dd12d54df230515623229778ad5.bindPopup(popup_2263c6e4859971ead5b4a942e2278b28)
+        ;
+
+        
+    
+    
+            marker_63ed0dd12d54df230515623229778ad5.bindTooltip(
+                `<div>
+                     Dept 69 - 616 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_63ed0dd12d54df230515623229778ad5.setIcon(icon_7a4b8621cd554ce42a7b2a49e2254ec2);
+            
+    
+            var marker_853ba87e901968ca3fdd6247a5e3eee1 = L.marker(
+                [48.96524086, 2.88440976],
+                {
+}
+            ).addTo(map_ab3316745344a8095c22692743d5bf3e);
+        
+    
+            var icon_585b680f3c044f426b6ecf442d5ab159 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "exclamation-triangle",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_357db43d874d7858273d2f01a3e412aa = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_23dd34efd7efdef4f78cfbebd6e57358 = $(`<div id="html_23dd34efd7efdef4f78cfbebd6e57358" style="width: 100.0%; height: 100.0%;">         <div style="font-family: Arial; width: 250px;">             <h4 style="color: #FF6B6B;">🚨 ÉTABLISSEMENT SURCHARGÉ</h4>             <b>Département:</b> 77<br>             <b>Type:</b> 6<br>             <hr>             <b>📊 Statistiques (valeurs réelles):</b><br>             • Élèves: 615<br>             • Classes: 24<br>             • Score: 378.60<br>             <hr>             <b>Services:</b><br>             • Restauration: ✅<br>             • Hébergement: ❌<br>             • ULIS: ✅<br>         </div>         </div>`)[0];
+                popup_357db43d874d7858273d2f01a3e412aa.setContent(html_23dd34efd7efdef4f78cfbebd6e57358);
+            
+        
+
+        marker_853ba87e901968ca3fdd6247a5e3eee1.bindPopup(popup_357db43d874d7858273d2f01a3e412aa)
+        ;
+
+        
+    
+    
+            marker_853ba87e901968ca3fdd6247a5e3eee1.bindTooltip(
+                `<div>
+                     Dept 77 - 615 élèves
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_853ba87e901968ca3fdd6247a5e3eee1.setIcon(icon_585b680f3c044f426b6ecf442d5ab159);
+            
+</script>
+</html> 

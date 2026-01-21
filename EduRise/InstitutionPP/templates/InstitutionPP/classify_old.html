@@ -1,0 +1,202 @@
+{% extends 'clustering_app/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-bank"></i> Public or Private Prediction</h1>
+        <p class="text-muted">Enter institution details to predict if it's a public or private institution</p>
+    </div>
+</div>
+
+{% if model_missing %}
+<!-- Model Missing Warning -->
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Models Not Found</h5>
+    <p>The classification models haven't been created yet. To use this feature:</p>
+    <ol class="mb-2">
+        <li>Open <code>classification.ipynb</code> notebook</li>
+        <li>Run all cells to train the Random Forest model</li>
+        <li>The notebook will export <code>classification.joblib</code> and <code>classification_scaler.joblib</code></li>
+        <li>Refresh this page</li>
+    </ol>
+    <p class="mb-0">The models will be saved to the project root directory.</p>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<!-- Prediction Result -->
+{% if prediction_result %}
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card border-{% if prediction_result.prediction == 0 %}success{% else %}primary{% endif %}">
+            <div class="card-header bg-{% if prediction_result.prediction == 0 %}success{% else %}primary{% endif %} text-white">
+                <h5 class="mb-0"><i class="bi bi-check-circle"></i> Prediction Result</h5>
+            </div>
+            <div class="card-body text-center py-5">
+                <h2 class="display-4 mb-3">
+                    <i class="bi bi-{% if prediction_result.prediction == 0 %}building{% else %}buildings{% endif %}"></i>
+                    {{ prediction_result.label }} Institution
+                </h2>
+                <p class="lead">Confidence: <strong>{{ prediction_result.confidence|floatformat:1 }}%</strong></p>
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-{% if prediction_result.prediction == 0 %}success{% else %}primary{% endif %}" 
+                         role="progressbar" 
+                         style="width: {{ prediction_result.confidence }}%"
+                         aria-valuenow="{{ prediction_result.confidence }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ prediction_result.confidence|floatformat:1 }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Classification Form -->
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Institution Information</h5>
+    </div>
+    <div class="card-body form-section">
+        <form method="post" class="row g-3">
+            {% csrf_token %}
+            
+            <div class="col-12">
+                <h6 class="text-muted mb-3">Basic Information</h6>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.nombre_classes_2009.id_for_label }}" class="form-label">
+                    {{ form.nombre_classes_2009.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.nombre_classes_2009 }}
+                {% if form.nombre_classes_2009.errors %}
+                    <div class="invalid-feedback d-block">{{ form.nombre_classes_2009.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.eleves_premier.id_for_label }}" class="form-label">
+                    {{ form.eleves_premier.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.eleves_premier }}
+                {% if form.eleves_premier.errors %}
+                    <div class="invalid-feedback d-block">{{ form.eleves_premier.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.eleves_superieur.id_for_label }}" class="form-label">
+                    {{ form.eleves_superieur.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.eleves_superieur }}
+                {% if form.eleves_superieur.errors %}
+                    <div class="invalid-feedback d-block">{{ form.eleves_superieur.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-12 mt-4">
+                <h6 class="text-muted mb-3">Location</h6>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="{{ form.latitude.id_for_label }}" class="form-label">
+                    {{ form.latitude.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.latitude }}
+                <div class="form-text">Geographic latitude (e.g., 48.8566 for Paris)</div>
+                {% if form.latitude.errors %}
+                    <div class="invalid-feedback d-block">{{ form.latitude.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-6">
+                <label for="{{ form.longitude.id_for_label }}" class="form-label">
+                    {{ form.longitude.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.longitude }}
+                <div class="form-text">Geographic longitude (e.g., 2.3522 for Paris)</div>
+                {% if form.longitude.errors %}
+                    <div class="invalid-feedback d-block">{{ form.longitude.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-12 mt-4">
+                <h6 class="text-muted mb-3">Services</h6>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.restauration.id_for_label }}" class="form-label">
+                    {{ form.restauration.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.restauration }}
+                {% if form.restauration.errors %}
+                    <div class="invalid-feedback d-block">{{ form.restauration.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.hebergement.id_for_label }}" class="form-label">
+                    {{ form.hebergement.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.hebergement }}
+                {% if form.hebergement.errors %}
+                    <div class="invalid-feedback d-block">{{ form.hebergement.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4">
+                <label for="{{ form.ulis.id_for_label }}" class="form-label">
+                    {{ form.ulis.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.ulis }}
+                {% if form.ulis.errors %}
+                    <div class="invalid-feedback d-block">{{ form.ulis.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-info btn-lg">
+                    <i class="bi bi-search"></i> Predict Public or Private
+                </button>
+                <button type="reset" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-lg"></i> Reset
+                </button>
+                <a href="{% url 'institution_list' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> Back to Clustering
+                </a>
+            </div>
+            
+            {% if form.errors %}
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <strong>Please correct the following errors:</strong>
+                    <ul class="mb-0">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Info Card -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-info-circle"></i> About This Prediction</h6>
+    </div>
+    <div class="card-body">
+        <p class="mb-2">This prediction uses a <strong>Random Forest classifier</strong> trained on 64,755 institutions.</p>
+        <p class="mb-0">The model analyzes institution characteristics like class numbers, student populations, location, and available services to predict whether it's a public or private institution.</p>
+    </div>
+</div>
+
+{% endblock %}
+ 

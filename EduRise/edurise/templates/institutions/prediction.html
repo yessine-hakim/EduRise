@@ -1,0 +1,1437 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Institutions — Students Prediction{% endblock %}
+
+{% block content %}
+<section class="ml-page institutions-prediction-page">
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="prediction-hero">
+            <div class="hero-content">
+                <h1>🎓 Prédicteur d'Effectifs Étudiants</h1>
+                <p class="hero-subtitle">Utilisez notre modèle d'IA pour prédire le nombre d'élèves en 2024</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">9</span>
+                        <span class="stat-label">Paramètres</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">93.7%</span>
+                        <span class="stat-label">Précision</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">64K+</span>
+                        <span class="stat-label">Institutions</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Cards Section -->
+        <div class="info-cards-grid">
+            <div class="info-card">
+                <div class="card-icon">📊</div>
+                <h3>Modèle Avancé</h3>
+                <p>Utilise Random Forest avec 200 arbres décisionnels pour une prédiction précise</p>
+            </div>
+            <div class="info-card">
+                <div class="card-icon">⚡</div>
+                <h3>Résultats Instantanés</h3>
+                <p>Obtenez votre prédiction en quelques secondes</p>
+            </div>
+            <div class="info-card">
+                <div class="card-icon">🎯</div>
+                <h3>Données Fiables</h3>
+                <p>Entraîné sur 64,755 établissements réels en France</p>
+            </div>
+        </div>
+
+        <!-- Main Form Section -->
+        <div class="prediction-form-section">
+            <div class="section-header">
+                <h2>📝 Remplissez les Informations</h2>
+                <p>Entrez les caractéristiques de votre établissement pour obtenir une prédiction</p>
+            </div>
+
+            <div class="form-container">
+                <form method="post" action="" class="institutions-form modern-form" id="institutionsPredictionForm">
+                    {% csrf_token %}
+
+                    {% if not model_loaded %}
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Attention:</strong> Aucun modèle trouvé. Veuillez ajouter les fichiers <code>rfr_student_model.joblib</code> et <code>model_features.joblib</code>.
+                    </div>
+                    {% endif %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <div class="form-sections">
+                        <!-- Section: Identification -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <span class="section-icon">🏫</span> Caractéristiques Principales
+                            </h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ form.nombre_classes_2024.id_for_label }}">
+                                        {{ form.nombre_classes_2024.label }}
+                                        <span class="help-icon" title="Nombre de classes dans l'établissement">ⓘ</span>
+                                    </label>
+                                    {{ form.nombre_classes_2024 }}
+                                    <small class="form-help">Exemple: 25 classes</small>
+                                    {% if form.nombre_classes_2024.errors %}<div class="form-error">{{ form.nombre_classes_2024.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.code_departement.id_for_label }}">
+                                        {{ form.code_departement.label }}
+                                        <span class="help-icon" title="Code du département (001-095)">ⓘ</span>
+                                    </label>
+                                    {{ form.code_departement }}
+                                    {% if form.code_departement.errors %}<div class="form-error">{{ form.code_departement.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.type_etablissement.id_for_label }}">
+                                        {{ form.type_etablissement.label }}
+                                        <span class="help-icon" title="Type d'établissement scolaire">ⓘ</span>
+                                    </label>
+                                    {{ form.type_etablissement }}
+                                    {% if form.type_etablissement.errors %}<div class="form-error">{{ form.type_etablissement.errors }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Statut et Localisation -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <span class="section-icon">📍</span> Localisation & Statut
+                            </h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ form.statut_public_prive.id_for_label }}">
+                                        {{ form.statut_public_prive.label }}
+                                        <span class="help-icon" title="Public ou Privé">ⓘ</span>
+                                    </label>
+                                    {{ form.statut_public_prive }}
+                                    {% if form.statut_public_prive.errors %}<div class="form-error">{{ form.statut_public_prive.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.latitude.id_for_label }}">
+                                        {{ form.latitude.label }}
+                                        <span class="help-icon" title="Latitude GPS (exemple: 48.8566)">ⓘ</span>
+                                    </label>
+                                    {{ form.latitude }}
+                                    <small class="form-help">Format: XX.XXXX</small>
+                                    {% if form.latitude.errors %}<div class="form-error">{{ form.latitude.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.longitude.id_for_label }}">
+                                        {{ form.longitude.label }}
+                                        <span class="help-icon" title="Longitude GPS (exemple: 2.3522)">ⓘ</span>
+                                    </label>
+                                    {{ form.longitude }}
+                                    <small class="form-help">Format: XX.XXXX</small>
+                                    {% if form.longitude.errors %}<div class="form-error">{{ form.longitude.errors }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section: Services -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <span class="section-icon">🎒</span> Services Offerts
+                            </h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="{{ form.restauration.id_for_label }}">
+                                        {{ form.restauration.label }}
+                                        <span class="help-icon" title="Cantine ou restauration disponible">ⓘ</span>
+                                    </label>
+                                    {{ form.restauration }}
+                                    {% if form.restauration.errors %}<div class="form-error">{{ form.restauration.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.hebergement.id_for_label }}">
+                                        {{ form.hebergement.label }}
+                                        <span class="help-icon" title="Internat ou hébergement disponible">ⓘ</span>
+                                    </label>
+                                    {{ form.hebergement }}
+                                    {% if form.hebergement.errors %}<div class="form-error">{{ form.hebergement.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.ulis.id_for_label }}">
+                                        {{ form.ulis.label }}
+                                        <span class="help-icon" title="Unité Localisée pour l'Inclusion Scolaire">ⓘ</span>
+                                    </label>
+                                    {{ form.ulis }}
+                                    {% if form.ulis.errors %}<div class="form-error">{{ form.ulis.errors }}</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <span class="btn-icon">🚀</span>
+                            <span>Obtenir la Prédiction</span>
+                        </button>
+                        <button type="reset" class="btn btn-secondary btn-large">
+                            <span class="btn-icon">🔄</span>
+                            <span>Réinitialiser</span>
+                        </button>
+                    </div>
+
+                    <!-- Prediction Result -->
+                    {% if prediction_result %}
+                    <div class="prediction-result-card" id="prediction-result">
+                        <div class="result-header">
+                            <h3>🎯 Résultat de la Prédiction</h3>
+                            <span class="result-badge">Succès</span>
+                        </div>
+                        
+                        <div class="result-body">
+                            <div class="result-value">
+                                <span class="result-number">{{ prediction_result.prediction|floatformat:0 }}</span>
+                                <span class="result-unit">élèves estimés</span>
+                            </div>
+                            
+                            <div class="result-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Modèle utilisé:</span>
+                                    <span class="detail-value">{{ prediction_result.model_used }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Confidence:</span>
+                                    <span class="detail-value">93.7% de précision</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Educational Needs Analysis -->
+                    <div class="educational-needs-section" id="needs-analysis">
+                        <div class="needs-header">
+                            <h3>📚 Analyse des Besoins Éducatifs Futurs</h3>
+                            <p>Basée sur la prédiction de {{ prediction_result.prediction|floatformat:0 }} élèves</p>
+                        </div>
+
+                        <div class="needs-grid">
+                            <!-- Capacity Planning -->
+                            <div class="needs-card capacity-card">
+                                <div class="card-header">
+                                    <h4>🏫 Planification de Capacité</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="metric">
+                                        <span class="metric-label">Nombre d'élèves prédits:</span>
+                                        <span class="metric-value primary">{{ prediction_result.prediction|floatformat:0 }}</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">Classes recommandées:</span>
+                                        <span class="metric-value">{% widthratio prediction_result.prediction 27 1 %}</span>
+                                        <span class="metric-note">(environ 25-30 élèves/classe)</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">Besoins en locaux:</span>
+                                        <span class="metric-value">{% widthratio prediction_result.prediction 1 7 %} m²</span>
+                                        <span class="metric-note">(6-8 m²/élève)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Resource Planning -->
+                            <div class="needs-card resources-card">
+                                <div class="card-header">
+                                    <h4>👥 Ressources Humaines</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="metric">
+                                        <span class="metric-label">Nombre d'enseignants:</span>
+                                        <span class="metric-value">{% widthratio prediction_result.prediction 18 1 %}</span>
+                                        <span class="metric-note">(1 pour 15-20 élèves)</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">Personnel administratif:</span>
+                                        <span class="metric-value">{% widthratio prediction_result.prediction 50 1 %}</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">Personnel de support:</span>
+                                        <span class="metric-value">{% widthratio prediction_result.prediction 25 1 %}</span>
+                                        <span class="metric-note">(Nettoyage, sécurité, cantine)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Budget Estimate -->
+                            <div class="needs-card budget-card">
+                                <div class="card-header">
+                                    <h4>💰 Budget Annuel Estimé</h4>
+                                </div>
+                                <div class="card-body budget-breakdown">
+                                    <div class="budget-item">
+                                        <span class="budget-label">Salaires enseignants:</span>
+                                        <span class="budget-amount">{{ prediction_result.salary_cost|floatformat:0 }} €</span>
+                                    </div>
+                                    <div class="budget-item">
+                                        <span class="budget-label">Fonctionnement:</span>
+                                        <span class="budget-amount">{{ prediction_result.ops_cost|floatformat:0 }} €</span>
+                                    </div>
+                                    <div class="budget-item total">
+                                        <span class="budget-label"><strong>Total estimé:</strong></span>
+                                        <span class="budget-amount"><strong>{{ prediction_result.total_cost|floatformat:0 }} €</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Information sur les Formules - Supprimée, remplacée par popup -->
+
+                        </div>
+                        
+                        <!-- Info Button for Formulas -->
+                        <div class="formulas-info-button">
+                            <button type="button" class="info-btn" onclick="openFormulasModal()">ⓘ Méthodologie & Formules</button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <h2>💡 Conseils d'Utilisation</h2>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <h4>📊 Données Précises</h4>
+                    <p>Assurez-vous que tous les paramètres correspondent à votre établissement pour obtenir une prédiction fiable.</p>
+                </div>
+                <div class="tip-card">
+                    <h4>🎯 Interprétation</h4>
+                    <p>La prédiction est basée sur 64,755 établissements réels en France. Utilisez-la comme indication.</p>
+                </div>
+                <div class="tip-card">
+                    <h4>🔍 Validation</h4>
+                    <p>Comparez avec les données historiques de votre établissement pour une meilleure compréhension.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+            <h2>⚙️ Comment Ça Marche?</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Remplissez le formulaire</h4>
+                    <p>Entrez les informations de votre établissement</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Cliquez sur Prédire</h4>
+                    <p>Le modèle IA traite vos données</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Obtenez le résultat</h4>
+                    <p>Recevez la prédiction du nombre d'élèves</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal Popup pour Méthodologie & Formules -->
+<div id="formulasModal" class="modal">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close" onclick="closeFormulasModal()">&times;</span>
+        <h2>📊 Méthodologie & Formules</h2>
+        
+        <div class="formulas-grid">
+            <div class="formula-card">
+                <h3>📚 Nombre de classes</h3>
+                <div class="formula-box">
+                    <span class="formula-equation">Élèves ÷ 27</span>
+                </div>
+                <p class="formula-explanation">Basé sur 25-30 élèves par classe (standard pédagogique)</p>
+            </div>
+
+            <div class="formula-card">
+                <h3>🏢 Surface nécessaire</h3>
+                <div class="formula-box">
+                    <span class="formula-equation">Élèves × 7 m²</span>
+                </div>
+                <p class="formula-explanation">Norme: 6-8 m² par élève (salles de classe + couloirs)</p>
+            </div>
+
+            <div class="formula-card">
+                <h3>👨‍🏫 Nombre d'enseignants</h3>
+                <div class="formula-box">
+                    <span class="formula-equation">Élèves ÷ 18</span>
+                </div>
+                <p class="formula-explanation">Ratio optimal: 1 enseignant pour 15-20 élèves</p>
+            </div>
+
+            <div class="formula-card">
+                <h3>👥 Personnel de support</h3>
+                <div class="formula-box">
+                    <span class="formula-equation">Élèves ÷ 25</span>
+                </div>
+                <p class="formula-explanation">Nettoyage, sécurité, restauration scolaire</p>
+            </div>
+
+            <div class="formula-card">
+                <h3>💰 Budget annuel estimé</h3>
+                <div class="formula-box">
+                    <span class="formula-equation">(Élèves ÷ 18) × 35,000 + (Élèves × 2,000)</span>
+                </div>
+                <p class="formula-explanation">Décomposition:</p>
+                <ul class="budget-details">
+                    <li>👨‍🏫 Salaires: (Élèves ÷ 18) × 35,000 €/an</li>
+                    <li>🏢 Fonctionnement: Élèves × 2,000 €</li>
+                    <li><strong>Total: Salaires + Fonctionnement</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(24, 37, 87, 0.3);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-content h2 {
+    color: #182557;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: #182557;
+}
+
+.formulas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.formula-card {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.formula-card:hover {
+    border-color: #182557;
+    box-shadow: 0 8px 20px rgba(24, 37, 87, 0.1);
+    transform: translateY(-3px);
+}
+
+.formula-card h3 {
+    color: #182557;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.formula-box {
+    background: white;
+    border: 2px dashed #28a745;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.formula-equation {
+    font-family: 'Courier New', monospace;
+    color: #28a745;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.formula-explanation {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.formula-card.info-card {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border-color: #2196f3;
+    grid-column: 1 / -1;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    padding: 8px 0;
+    color: #333;
+    font-weight: 500;
+}
+
+.formulas-info-button {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.info-btn {
+    background: linear-gradient(135deg, #182557 0%, #2a3a6b 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(24, 37, 87, 0.2);
+}
+
+.info-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(24, 37, 87, 0.3);
+}
+
+.info-btn:active {
+    transform: translateY(0);
+}
+
+/* Modern Prediction Page Styles */
+.prediction-hero {
+    background: linear-gradient(135deg, #182557 0%, #2a3a6b 100%);
+    color: white;
+    padding: 60px 30px;
+    border-radius: 16px;
+    margin-bottom: 50px;
+    box-shadow: 0 10px 40px rgba(24, 37, 87, 0.15);
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #28a745;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-top: 5px;
+}
+
+/* Info Cards */
+.info-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+.info-card {
+    background: white;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-card:hover {
+    border-color: #182557;
+    box-shadow: 0 8px 24px rgba(24, 37, 87, 0.1);
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.info-card h3 {
+    color: #182557;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.info-card p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Form Section */
+.prediction-form-section {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-bottom: 50px;
+}
+
+.section-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.section-header h2 {
+    color: #182557;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.section-header p {
+    color: #666;
+    font-size: 1rem;
+}
+
+/* Form Sections */
+.form-sections {
+    display: grid;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.form-section {
+    background: #f8f9fa;
+    border-left: 4px solid #182557;
+    border-radius: 8px;
+    padding: 25px;
+}
+
+.section-title {
+    color: #182557;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-icon {
+    font-size: 1.3rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: #182557;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-icon {
+    cursor: help;
+    opacity: 0.6;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #182557;
+    box-shadow: 0 0 0 3px rgba(24, 37, 87, 0.1);
+}
+
+.form-help {
+    color: #999;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.form-error {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #182557 0%, #2a3a6b 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(24, 37, 87, 0.25);
+}
+
+.btn-secondary {
+    background: #e0e0e0;
+    color: #182557;
+}
+
+.btn-secondary:hover {
+    background: #d0d0d0;
+}
+
+.btn-large {
+    padding: 15px 40px;
+    font-size: 1.05rem;
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+}
+
+/* Prediction Result */
+.prediction-result-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 30px;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-header {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.result-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.result-badge {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.result-body {
+    padding: 30px;
+}
+
+.result-value {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.result-number {
+    display: block;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #182557;
+    line-height: 1;
+}
+
+.result-unit {
+    display: block;
+    color: #666;
+    font-size: 1.1rem;
+    margin-top: 10px;
+}
+
+.result-details {
+    display: grid;
+    gap: 15px;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 20px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #182557;
+    font-weight: 600;
+}
+
+/* Tips Section */
+.tips-section {
+    margin-bottom: 50px;
+}
+
+.tips-section h2 {
+    color: #182557;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+}
+
+.tips-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.tip-card {
+    background: white;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s ease;
+}
+
+.tip-card:hover {
+    border-color: #28a745;
+    box-shadow: 0 8px 24px rgba(40, 167, 69, 0.1);
+}
+
+.tip-card h4 {
+    color: #182557;
+    margin-bottom: 10px;
+}
+
+.tip-card p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* How It Works */
+.how-it-works {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    padding: 40px;
+    border: 2px solid #e0e0e0;
+}
+
+.how-it-works h2 {
+    color: #182557;
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 1.8rem;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.step {
+    text-align: center;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #182557 0%, #2a3a6b 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 15px;
+}
+
+.step h4 {
+    color: #182557;
+    margin-bottom: 10px;
+}
+
+.step p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Alerts */
+.alert {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+}
+
+.alert-warning {
+    background: #fffbeb;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .prediction-hero {
+        padding: 40px 20px;
+    }
+
+    .hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .hero-stats {
+        gap: 20px;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .prediction-form-section {
+        padding: 20px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        justify-content: center;
+    }
+
+    .result-number {
+        font-size: 2.5rem;
+    }
+
+    .hero-stats {
+        flex-direction: column;
+    }
+
+    .needs-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-list {
+        flex-direction: column;
+    }
+
+    .service-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Educational Needs Analysis Section */
+.educational-needs-section {
+    margin-top: 60px;
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.needs-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.needs-header h3 {
+    font-size: 2rem;
+    color: #182557;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.needs-header p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+.needs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.needs-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.needs-card:hover {
+    border-color: #182557;
+    box-shadow: 0 12px 32px rgba(24, 37, 87, 0.15);
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #182557 0%, #2a3a6b 100%);
+    color: white;
+    padding: 20px;
+    border-bottom: 3px solid #0f1a3a;
+}
+
+.card-header h4 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.card-body {
+    padding: 25px;
+}
+
+/* Capacity Card */
+.capacity-card .metric {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.capacity-card .metric:last-child {
+    border-bottom: none;
+}
+
+.metric-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.metric-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #182557;
+}
+
+.metric-value.primary {
+    color: #28a745;
+    font-size: 1.8rem;
+}
+
+.metric-note {
+    display: block;
+    font-size: 0.85rem;
+    color: #999;
+    margin-top: 5px;
+}
+
+/* Services Card */
+.services-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.service-item:hover {
+    background: #e3f2fd;
+    transform: translateX(5px);
+}
+
+.service-icon {
+    font-size: 1.3rem;
+    min-width: 30px;
+}
+
+.service-item span:nth-child(2) {
+    flex: 1;
+    color: #333;
+    font-weight: 500;
+}
+
+.priority {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.priority.high {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.priority.medium {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* Budget Card */
+.budget-breakdown {
+    padding: 0;
+}
+
+.budget-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 25px;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 500;
+}
+
+.budget-item.total {
+    background: #f8f9fa;
+    border-bottom: none;
+    font-size: 1.1rem;
+}
+
+.budget-label {
+    color: #666;
+}
+
+.budget-amount {
+    color: #28a745;
+    font-weight: 700;
+}
+
+.budget-item.total .budget-amount {
+    font-size: 1.3rem;
+    color: #182557;
+}
+
+/* Growth Projection */
+.growth-projection {
+    padding: 0;
+}
+
+.projection-item {
+    padding: 20px 25px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.projection-item:last-child {
+    border-bottom: none;
+}
+
+.projection-item .year {
+    display: block;
+    font-weight: 700;
+    color: #182557;
+    margin-bottom: 5px;
+}
+
+.projection-item .students {
+    display: block;
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.projection-item .bar {
+    height: 8px;
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+    border-radius: 4px;
+}
+
+/* Recommendations Card */
+.recommendations-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recommendation {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    color: #333;
+    align-items: flex-start;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.recommendation:last-child {
+    border-bottom: none;
+}
+
+.rec-icon {
+    color: #28a745;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.recommendation span:last-child {
+    line-height: 1.5;
+}
+
+/* Info Formulas Card */
+.info-formulas-card .card-body {
+    padding: 0;
+}
+
+.formula-item {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 25px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.formula-item:last-child {
+    border-bottom: none;
+}
+
+.formula-label {
+    font-weight: 700;
+    color: #182557;
+    margin-bottom: 6px;
+    font-size: 1rem;
+}
+
+.formula-text {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    color: #28a745;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.formula-note {
+    font-size: 0.9rem;
+    color: #999;
+    font-style: italic;
+}
+
+.budget-details {
+    list-style: none;
+    padding: 12px 0;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.budget-details li {
+    color: #333;
+    padding: 4px 0;
+    font-weight: 500;
+}
+</style>
+
+<script>
+    document.getElementById('institutionsPredictionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Submit the form
+        this.submit();
+        
+        // Scroll to result after a short delay
+        setTimeout(function() {
+            const resultElement = document.getElementById('prediction-result');
+            if (resultElement) {
+                resultElement.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }
+        }, 500);
+    });
+
+    // Modal Functions for Formulas
+    function openFormulasModal() {
+        document.getElementById('formulasModal').classList.add('show');
+    }
+
+    function closeFormulasModal() {
+        document.getElementById('formulasModal').classList.remove('show');
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        const modal = document.getElementById('formulasModal');
+        if (event.target == modal) {
+            modal.classList.remove('show');
+        }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.getElementById('formulasModal').classList.remove('show');
+        }
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,12 @@
+Django==5.2.8
+djangorestframework
+requests
+gunicorn
+whitenoise
+pandas
+python-decouple
+dj-database-url
+Pillow
+scikit-learn
+imbalanced-learn
+huggingface_hub 
