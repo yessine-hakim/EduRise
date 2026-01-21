@@ -6,3 +6,5 @@
 *.html linguist-detectable=true
 *.css linguist-detectable=true
 *.js linguist-detectable=true
+# Exclude generated map files from language statistics
+EduRise/enrollment/static/enrollment/maps_html/*.html linguist-generated=true
