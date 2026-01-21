@@ -8,3 +8,4 @@
 *.js linguist-detectable=true
 # Exclude generated map files from language statistics
 EduRise/enrollment/static/enrollment/maps_html/*.html linguist-generated=true
+EduRise/edurise/static/maps/*.html linguist-generated=true
